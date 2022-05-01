@@ -1,4 +1,4 @@
-export const GetMusic = (music) => {
+export const SetMusic = (music) => {
   const action = {
     type: "GETMUSIC",
     music,
