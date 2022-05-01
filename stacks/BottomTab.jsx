@@ -11,15 +11,22 @@ function BottomTabs() {
   return (
     <Tab.Navigator
       activeColor="black"
-      inactiveColor="gray"
-      screenOptions={{ tabBarColor: "black" }}
+      inactiveColor="blue"
+      initialRouteName="player"
+      screenOptions={{
+        tabBarColor: "black",
+        headerShown: false,
+        tabBarStyle: {
+          height: 60,
+        },
+      }}
       barStyle={{ backgroundColor: "#ffff" }}
     >
       <Tab.Screen
         options={{
           tabBarLabel: "AudioList",
           tabBarIcon: ({ color }) => (
-            <Ionicons name="md-headset" size={24} color="black" />
+            <Ionicons name="md-headset" size={24} color={color} />
           ),
         }}
         name="audiolist"
@@ -27,9 +34,9 @@ function BottomTabs() {
       />
       <Tab.Screen
         options={{
-          tabBarLabel: "AudioList",
+          tabBarLabel: "Player",
           tabBarIcon: ({ color }) => (
-            <FontAwesome5 name="compact-disc" size={24} color="black" />
+            <FontAwesome5 name="compact-disc" size={24} color={color} />
           ),
         }}
         name="player"
@@ -37,9 +44,9 @@ function BottomTabs() {
       />
       <Tab.Screen
         options={{
-          tabBarLabel: "AudioList",
+          tabBarLabel: "Playlist",
           tabBarIcon: ({ color }) => (
-            <MaterialIcons name="my-library-music" size={24} color="black" />
+            <MaterialIcons name="my-library-music" size={24} color={color} />
           ),
         }}
         name="playlist"

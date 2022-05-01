@@ -8,4 +8,4 @@ const MusicReducer = (state = false, action) => {
   }
 };
 
-export default AuthReducer;
+export default MusicReducer;
