@@ -34,6 +34,7 @@ export default function AudioListScreen() {
   return (
     <View>
       <FlatList
+        showsVerticalScrollIndicator={false}
         style={{ backgroundColor: "#fff" }}
         data={musicList}
         keyExtractor={(item) => item.id}
@@ -74,7 +75,11 @@ export default function AudioListScreen() {
           </TouchableOpacity>
         )}
       />
-      <BottomModal visible={visible} setVisible={setVisible} />
+      <BottomModal
+        visible={visible}
+        setVisible={setVisible}
+        onPlay={PlayAudio}
+      />
     </View>
   );
 }

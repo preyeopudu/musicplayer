@@ -8,32 +8,46 @@ import {
   TouchableWithoutFeedback,
 } from "react-native";
 import { ScaledSheet } from "react-native-size-matters";
+import GestureRecognizer, {
+  swipeDirections,
+} from "react-native-swipe-gestures";
+
+const config = {
+  velocityThreshold: 0.0,
+  directionalOffsetThreshold: 80,
+};
 
 const BottomModal = ({ visible, setVisible }) => {
   return (
     <View>
       <StatusBar hidden />
-      <Modal transparent visible={visible} animationType="slide">
-        <TouchableWithoutFeedback onPress={() => setVisible(false)}>
-          <View style={styles.container}>
-            <View style={styles.modalContainer}>
-              <Text style={styles.title}>music_title.mp3</Text>
-              <TouchableOpacity
-                activeOpacity={0.8}
-                style={styles.buttonContainer}
-              >
-                <Text style={styles.buttonText}>Play</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                activeOpacity={0.8}
-                style={styles.buttonContainer}
-              >
-                <Text style={styles.buttonText}>Add to Playlist</Text>
-              </TouchableOpacity>
+      <GestureRecognizer
+        onSwipeDown={() => setVisible(false)}
+        config={config}
+        style={{ bottom: 0, flex: 1 }}
+      >
+        <Modal transparent visible={visible} animationType="slide">
+          <TouchableWithoutFeedback onPress={() => setVisible(false)}>
+            <View style={styles.container}>
+              <View style={styles.modalContainer}>
+                <Text style={styles.title}>music_title.mp3</Text>
+                <TouchableOpacity
+                  activeOpacity={0.8}
+                  style={styles.buttonContainer}
+                >
+                  <Text style={styles.buttonText}>Play</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  activeOpacity={0.8}
+                  style={styles.buttonContainer}
+                >
+                  <Text style={styles.buttonText}>Add to Playlist</Text>
+                </TouchableOpacity>
+              </View>
             </View>
-          </View>
-        </TouchableWithoutFeedback>
-      </Modal>
+          </TouchableWithoutFeedback>
+        </Modal>
+      </GestureRecognizer>
     </View>
   );
 };
