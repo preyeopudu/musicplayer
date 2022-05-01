@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { FlatList, Text, View, Image } from "react-native";
 import { ScaledSheet } from "react-native-size-matters";
 import { useSelector } from "react-redux";
+import ConvertTime from "../../utility/ConvertTime";
 
 export default function AudioListScreen() {
   const reduxData = useSelector((s) => s);
@@ -36,7 +37,9 @@ export default function AudioListScreen() {
               </Text>
             </View>
           </View>
-          <Text style={styles.audioLength}>{item.duration / 60}</Text>
+          <Text style={styles.audioLength}>
+            {ConvertTime(item.duration / 60)}
+          </Text>
         </View>
       )}
     />
