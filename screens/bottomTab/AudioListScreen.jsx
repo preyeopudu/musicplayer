@@ -1,12 +1,20 @@
 import React, { useEffect, useState } from "react";
-import { FlatList, Text, View, Image } from "react-native";
+import { FlatList, Text, View, Image, TouchableOpacity } from "react-native";
 import { ScaledSheet } from "react-native-size-matters";
 import { useSelector } from "react-redux";
 import ConvertTime from "../../utility/ConvertTime";
+import { Audio } from "expo-av";
 
 export default function AudioListScreen() {
   const reduxData = useSelector((s) => s);
   const musicList = reduxData.music;
+
+  const PlayAudio = async (audio) => {
+    const { sound: playbackObject } = await Audio.Sound.createAsync(
+      { uri: audio },
+      { shouldPlay: true }
+    );
+  };
 
   return (
     <FlatList
@@ -14,7 +22,11 @@ export default function AudioListScreen() {
       data={musicList}
       keyExtractor={(item) => item.id}
       renderItem={({ item }) => (
-        <View
+        <TouchableOpacity
+          activeOpacity={0.7}
+          onPress={() => {
+            PlayAudio(item.uri);
+          }}
           style={{
             backgroundColor: "#fff",
             elevation: 10,
@@ -40,7 +52,7 @@ export default function AudioListScreen() {
           <Text style={styles.audioLength}>
             {ConvertTime(item.duration / 60)}
           </Text>
-        </View>
+        </TouchableOpacity>
       )}
     />
   );
