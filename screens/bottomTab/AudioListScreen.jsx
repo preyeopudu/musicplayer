@@ -1,6 +1,6 @@
-import { StatusBar } from "expo-status-bar";
 import React, { useEffect, useState } from "react";
-import { FlatList, StyleSheet, Text, View } from "react-native";
+import { FlatList, Text, View, Image } from "react-native";
+import { ScaledSheet } from "react-native-size-matters";
 import { useSelector } from "react-redux";
 
 export default function AudioListScreen() {
@@ -9,25 +9,69 @@ export default function AudioListScreen() {
 
   return (
     <FlatList
+      style={{ backgroundColor: "#fff" }}
       data={musicList}
       keyExtractor={(item) => item.id}
       renderItem={({ item }) => (
-        <Text style={styles.audioTitle}>{item.filename}</Text>
+        <View
+          style={{
+            backgroundColor: "#fff",
+            elevation: 10,
+            marginVertical: 5,
+            borderRadius: 10,
+            paddingVertical: 10,
+            marginHorizontal: 10,
+          }}
+        >
+          <View style={styles.audioContainer}>
+            <View style={styles.imageContainer}>
+              <Image
+                source={require("../../assets/images/music.png")}
+                style={{ width: 25, height: 25 }}
+              />
+            </View>
+            <View>
+              <Text style={styles.audioTitle} numberOfLines={1}>
+                {item.filename.substring(0, 39)}
+              </Text>
+            </View>
+          </View>
+          <Text style={styles.audioLength}>{item.duration / 60}</Text>
+        </View>
       )}
     />
   );
 }
 
-const styles = StyleSheet.create({
+const styles = ScaledSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
     alignItems: "center",
     justifyContent: "center",
   },
+  audioContainer: {
+    flexDirection: "row",
+    marginHorizontal: 5,
+    paddingHorizontal: 10,
+    alignItems: "center",
+  },
+  audioStart: {
+    padding: 30,
+  },
   audioTitle: {
-    textAlign: "center",
-    paddingVertical: 20,
-    backgroundColor: "pink",
+    marginVertical: 5,
+    width: "240@s",
+  },
+  imageContainer: {
+    borderRadius: 100,
+    backgroundColor: "#000",
+    padding: 5,
+    marginHorizontal: 10,
+  },
+  audioLength: {
+    fontSize: 10,
+    textAlign: "right",
+    right: 15,
   },
 });
