@@ -1,13 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import {
-  FlatList,
-  Text,
-  View,
-  Image,
-  TouchableOpacity,
-  Alert,
-  TouchableWithoutFeedback,
-} from "react-native";
+import { FlatList, Text, View, Image, TouchableOpacity } from "react-native";
 import { ScaledSheet } from "react-native-size-matters";
 import { useSelector } from "react-redux";
 import ConvertTime from "../../utility/ConvertTime";
@@ -29,22 +21,17 @@ export default function AudioListScreen() {
   const musicList = reduxData.music;
 
   const openModal = async (val) => {
-    console.log(val.uri);
     setCurrentItem(val);
     setVisible(true);
   };
 
-  const playSong = async (val) => {
-    await LoadAudio(val.uri);
-    PlayAudio();
-  };
-
-  const LoadAudio = async (uri) => {
-    const checkLoading = await sound.getStatusAsync();
-    await sound.unloadAsync();
-    const result = await sound.loadAsync({ uri: uri }, {}, true);
-    sound.setOnPlaybackStatusUpdate(UpdateStatus);
-    SetDuration(result.durationMillis);
+  const PlaySong = async (val) => {
+    if (Playing === false) {
+      PlayAudio(val.uri);
+    } else {
+      PauseAudio();
+      console.log("lets pause hmm");
+    }
   };
 
   const UpdateStatus = async (data) => {
@@ -75,17 +62,50 @@ export default function AudioListScreen() {
     }
   };
 
-  const PlayAudio = async () => {
+  // const LoadAudio = async (uri) => {
+  //   const checkLoading = await sound.getStatusAsync();
+  //   await sound.unloadAsync();
+  //   const result = await sound.loadAsync({ uri: uri }, {}, true);
+  //   sound.setOnPlaybackStatusUpdate(UpdateStatus);
+  //   SetDuration(result.durationMillis);
+  // };
+
+  const PlayAudio = async (uri) => {
     try {
+      const checkLoading = await sound.getStatusAsync();
+      console.log(checkLoading.isLoaded);
+      if (checkLoading.isLoaded == false) {
+        const soundObj = await sound.loadAsync({ uri: uri }, {}, true);
+      }
+
+      sound.setOnPlaybackStatusUpdate(UpdateStatus);
       const result = await sound.getStatusAsync();
       if (result.isLoaded) {
         if (result.isPlaying === false) {
           sound.playAsync();
           SetPlaying(true);
+        } else if (resu) {
+          sound.pauseAsync();
         }
       }
     } catch (error) {
+      console.log(error);
       SetPlaying(false);
+    }
+  };
+
+  const PauseAudio = async () => {
+    try {
+      const result = await sound.getStatusAsync();
+      if (result.isLoaded) {
+        if (result.isPlaying === true) {
+          sound.pauseAsync();
+          SetPlaying(false);
+        }
+      }
+    } catch (error) {
+      console.log(error);
+      SetPlaying(true);
     }
   };
 
@@ -106,6 +126,7 @@ export default function AudioListScreen() {
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <TouchableOpacity
+            onPress={() => PlaySong(item)}
             activeOpacity={0.9}
             // onPress={() => {
             //   PlayAudio(item.uri);
@@ -145,7 +166,7 @@ export default function AudioListScreen() {
         item={currentItem}
         visible={visible}
         setVisible={setVisible}
-        onPlay={() => playSong(currentItem)}
+        onPlay={() => PlaySong(currentItem)}
       />
     </View>
   );
