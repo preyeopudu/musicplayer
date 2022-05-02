@@ -30,10 +30,13 @@ export default function AudioListScreen() {
 
   const openModal = async (val) => {
     console.log(val.uri);
-
-    LoadAudio(val.uri);
     setCurrentItem(val);
     setVisible(true);
+  };
+
+  const playSong = async (val) => {
+    await LoadAudio(val.uri);
+    PlayAudio();
   };
 
   const LoadAudio = async (uri) => {
@@ -142,7 +145,7 @@ export default function AudioListScreen() {
         item={currentItem}
         visible={visible}
         setVisible={setVisible}
-        onPlay={() => PlayAudio()}
+        onPlay={() => playSong(currentItem)}
       />
     </View>
   );
