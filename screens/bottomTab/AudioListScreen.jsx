@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   FlatList,
   Text,
@@ -15,25 +15,84 @@ import { Audio } from "expo-av";
 import { Entypo } from "@expo/vector-icons";
 import BottomModal from "../../components/BottomModal";
 
+const sound = new Audio.Sound();
+
 export default function AudioListScreen() {
   const [visible, setVisible] = useState(false);
   const [currentItem, setCurrentItem] = useState(null);
   const reduxData = useSelector((s) => s);
+  const [Loaded, SetLoaded] = useState(false);
+  const [Loading, SetLoading] = useState(false);
+  const [Playing, SetPlaying] = useState(false);
+  const [Duration, SetDuration] = useState(0);
+  const [Value, SetValue] = useState(0);
   const musicList = reduxData.music;
 
-  const openModal = (val) => {
+  const openModal = async (val) => {
+    console.log(val.uri);
+
+    LoadAudio(val.uri);
     setCurrentItem(val);
     setVisible(true);
   };
 
-  console.log(currentItem);
-
-  const PlayAudio = async (audio) => {
-    const { sound: playbackObject } = await Audio.Sound.createAsync(
-      { uri: audio },
-      { shouldPlay: true }
-    );
+  const LoadAudio = async (uri) => {
+    const checkLoading = await sound.getStatusAsync();
+    await sound.unloadAsync();
+    const result = await sound.loadAsync({ uri: uri }, {}, true);
+    sound.setOnPlaybackStatusUpdate(UpdateStatus);
+    SetDuration(result.durationMillis);
   };
+
+  const UpdateStatus = async (data) => {
+    try {
+      if (data.didJustFinish) {
+        ResetPlayer();
+      } else if (data.positionMillis) {
+        if (data.durationMillis) {
+          SetValue((data.positionMillis / data.durationMillis) * 100);
+        }
+      }
+    } catch (error) {
+      console.log("Error");
+    }
+  };
+
+  const ResetPlayer = async () => {
+    try {
+      const checkLoading = await sound.current.getStatusAsync();
+      if (checkLoading.isLoaded === true) {
+        SetValue(0);
+        SetPlaying(false);
+        await sound.setPositionAsync(0);
+        await sound.stopAsync();
+      }
+    } catch (error) {
+      console.log("Error");
+    }
+  };
+
+  const PlayAudio = async () => {
+    try {
+      const result = await sound.getStatusAsync();
+      if (result.isLoaded) {
+        if (result.isPlaying === false) {
+          sound.playAsync();
+          SetPlaying(true);
+        }
+      }
+    } catch (error) {
+      SetPlaying(false);
+    }
+  };
+
+  // const PlayAudio = async (uri, playbackObject, shouldPlay = true) => {
+  //   const { sound: playbackObject } = await Audio.Sound.createAsync(
+  //     { uri: uri }
+  //     // { shouldPlay: true }
+  //   );
+  //   console.log(playbackObject);
+  // };
 
   return (
     <View>
@@ -83,7 +142,7 @@ export default function AudioListScreen() {
         item={currentItem}
         visible={visible}
         setVisible={setVisible}
-        onPlay={() => PlayAudio(currentItem.uri)}
+        onPlay={() => PlayAudio()}
       />
     </View>
   );
