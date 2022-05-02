@@ -17,18 +17,22 @@ import BottomModal from "../../components/BottomModal";
 
 export default function AudioListScreen() {
   const [visible, setVisible] = useState(false);
+  const [currentItem, setCurrentItem] = useState(null);
   const reduxData = useSelector((s) => s);
   const musicList = reduxData.music;
 
-  const openModal = () => {
+  const openModal = (val) => {
+    setCurrentItem(val);
     setVisible(true);
   };
 
+  console.log(currentItem);
+
   const PlayAudio = async (audio) => {
-    // const { sound: playbackObject } = await Audio.Sound.createAsync(
-    //   { uri: audio },
-    //   { shouldPlay: true }
-    // );
+    const { sound: playbackObject } = await Audio.Sound.createAsync(
+      { uri: audio },
+      { shouldPlay: true }
+    );
   };
 
   return (
@@ -41,9 +45,9 @@ export default function AudioListScreen() {
         renderItem={({ item }) => (
           <TouchableOpacity
             activeOpacity={0.9}
-            onPress={() => {
-              PlayAudio(item.uri);
-            }}
+            // onPress={() => {
+            //   PlayAudio(item.uri);
+            // }}
             style={{
               backgroundColor: "#fff",
               elevation: 10,
@@ -68,7 +72,7 @@ export default function AudioListScreen() {
                   {ConvertTime(item.duration / 60)}
                 </Text>
               </View>
-              <TouchableOpacity onPress={() => openModal()}>
+              <TouchableOpacity onPress={() => openModal(item)}>
                 <Entypo name="dots-three-vertical" size={20} color="#808080" />
               </TouchableOpacity>
             </View>
@@ -76,9 +80,10 @@ export default function AudioListScreen() {
         )}
       />
       <BottomModal
+        item={currentItem}
         visible={visible}
         setVisible={setVisible}
-        onPlay={PlayAudio}
+        onPlay={() => PlayAudio(currentItem.uri)}
       />
     </View>
   );

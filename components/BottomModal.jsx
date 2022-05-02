@@ -17,7 +17,7 @@ const config = {
   directionalOffsetThreshold: 80,
 };
 
-const BottomModal = ({ visible, setVisible }) => {
+const BottomModal = ({ visible, setVisible, item, onPlay }) => {
   return (
     <View>
       <StatusBar hidden />
@@ -30,8 +30,15 @@ const BottomModal = ({ visible, setVisible }) => {
           <TouchableWithoutFeedback onPress={() => setVisible(false)}>
             <View style={styles.container}>
               <View style={styles.modalContainer}>
-                <Text style={styles.title}>music_title.mp3</Text>
+                {!item ? (
+                  <Text></Text>
+                ) : (
+                  <Text style={styles.title} numberOfLines={1}>
+                    {item.filename}
+                  </Text>
+                )}
                 <TouchableOpacity
+                  onPress={() => onPlay()}
                   activeOpacity={0.8}
                   style={styles.buttonContainer}
                 >
@@ -70,11 +77,12 @@ const styles = ScaledSheet.create({
   },
   title: {
     marginVertical: 10,
-    fontSize: "18@s",
+    fontSize: "17@s",
     color: "#686868",
+    width: "85%",
   },
   buttonText: {
-    fontSize: "18@s",
+    fontSize: "17@s",
     marginVertical: 10,
   },
 });
