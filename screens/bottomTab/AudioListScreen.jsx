@@ -6,9 +6,7 @@ import ConvertTime from "../../utility/ConvertTime";
 import { Audio } from "expo-av";
 import { Entypo } from "@expo/vector-icons";
 import BottomModal from "../../components/BottomModal";
-import { Play } from "../../utility/AudioController";
-
-const sound = new Audio.Sound();
+import { useNavigation } from "@react-navigation/native";
 
 export default function AudioListScreen() {
   const reduxData = useSelector((s) => s);
@@ -20,52 +18,16 @@ export default function AudioListScreen() {
   const [Playing, SetPlaying] = useState(false);
   const [Duration, SetDuration] = useState(0);
   const [Value, SetValue] = useState(0);
+  const { navigate } = useNavigation();
 
   const openModal = async (val) => {
     setCurrentItem(val);
     setVisible(true);
   };
 
-  // currentItem,,Playing,setCurrentItem,SetPlaying
-  const PlayPause = async (val) => {
-    const result = await sound.getStatusAsync();
-    if (result.isLoaded == true) {
-      if (val == currentItem) {
-        sound.pauseAsync();
-        SetPlaying(false);
-      } else if (val != currentItem) {
-        await sound.unloadAsync();
-        setCurrentItem(val);
-        await sound.loadAsync({ uri: val.uri }, {}, true);
-        sound.playAsync();
-        SetPlaying(true);
-      }
-    }
-    if (Playing === false) {
-      if (result.isLoaded == false) {
-        setCurrentItem(val);
-        await sound.loadAsync({ uri: val.uri }, {}, true);
-      }
-      sound.playAsync();
-      SetPlaying(true);
-    }
+  const HandleClick = (item) => {
+    navigate("player", { item });
   };
-
-  // const LoadAudio = async (uri) => {
-  //   const checkLoading = await sound.getStatusAsync();
-  //   await sound.unloadAsync();
-  //   const result = await sound.loadAsync({ uri: uri }, {}, true);
-  //   sound.setOnPlaybackStatusUpdate(UpdateStatus);
-  //   SetDuration(result.durationMillis);
-  // };
-
-  // const PlayAudio = async (uri, playbackObject, shouldPlay = true) => {
-  //   const { sound: playbackObject } = await Audio.Sound.createAsync(
-  //     { uri: uri }
-  //     // { shouldPlay: true }
-  //   );
-  //   console.log(playbackObject);
-  // };
 
   return (
     <View>
@@ -76,7 +38,7 @@ export default function AudioListScreen() {
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <TouchableOpacity
-            onPress={() => Play(item)}
+            onPress={() => HandleClick(item)}
             activeOpacity={0.9}
             // onPress={() => {
             //   PlayAudio(item.uri);

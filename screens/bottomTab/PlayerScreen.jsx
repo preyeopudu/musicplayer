@@ -5,12 +5,22 @@ import { useSelector } from "react-redux";
 import { Entypo, AntDesign } from "@expo/vector-icons";
 import { ScaledSheet } from "react-native-size-matters";
 import Slider from "@react-native-community/slider";
-import { SeekUpdate } from "../../utility/AudioController";
+import { Pause, Play, SeekUpdate } from "../../utility/AudioController";
 import { useNavigation } from "@react-navigation/native";
 import MarqueeText from "react-native-marquee";
 
 export default function PlayerScreen({ route }) {
-  const [item, setItem] = useState({});
+  const [play, setPlay] = useState(false);
+
+  const HandlePlay = (item) => {
+    if (play == true) {
+      Pause();
+      setPlay(false);
+    } else if (play == false) {
+      Play(item);
+      setPlay(true);
+    }
+  };
 
   const reduxData = useSelector((s) => s);
   const musicList = reduxData.music;
@@ -65,9 +75,16 @@ export default function PlayerScreen({ route }) {
           <View style={[styles.button]}>
             <AntDesign name="stepbackward" size={15} color="#808080" />
           </View>
-          <View style={[styles.button, { width: 45, height: 45 }]}>
-            <AntDesign name="caretright" size={22} color="#808080" />
-          </View>
+          <TouchableOpacity
+            style={[styles.button, { width: 45, height: 45 }]}
+            onPress={() => HandlePlay(route.params.item)}
+          >
+            {play ? (
+              <AntDesign name="pause" size={22} color="#808080" />
+            ) : (
+              <AntDesign name="caretright" size={24} color="#808080" />
+            )}
+          </TouchableOpacity>
           <View style={[styles.button]}>
             <AntDesign name="stepforward" size={15} color="#808080" />
           </View>
@@ -83,7 +100,7 @@ const styles = ScaledSheet.create({
     backgroundColor: "#fff",
   },
   audioTitle: {
-    fontSize: "17@s",
+    fontSize: "16@s",
     fontWeight: "900",
     width: "70%",
     color: "#808080",

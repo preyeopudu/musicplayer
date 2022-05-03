@@ -1,59 +1,21 @@
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { createStackNavigator } from "@react-navigation/stack";
 import AudioListScreen from "../screens/bottomTab/AudioListScreen";
 import PlayerScreen from "../screens/bottomTab/PlayerScreen";
 import PlaylistScreen from "../screens/bottomTab/PlaylistScreen";
 
-import { Ionicons, FontAwesome5, MaterialIcons } from "@expo/vector-icons";
+const Stack = createStackNavigator();
 
-const Tab = createBottomTabNavigator();
-
-function BottomTabs() {
+function AudioStack() {
   return (
-    <Tab.Navigator
-      activeColor="#ff5f96"
-      inactiveColor="#ff5f96"
-      initialRouteName="player"
-      screenOptions={{
-        tabBarColor: "#ff5f96",
-        headerShown: false,
-        tabBarStyle: {
-          height: 60,
-        },
-      }}
-      barStyle={{ backgroundColor: "#ffff" }}
+    <Stack.Navigator
+      screenOptions={{ headerShown: false }}
+      initialRouteName="audiolists"
     >
-      <Tab.Screen
-        options={{
-          tabBarLabel: "AudioList",
-          tabBarIcon: ({ color }) => (
-            <Ionicons name="md-headset" size={24} color={color} />
-          ),
-        }}
-        name="audiolist"
-        component={AudioListScreen}
-      />
-      <Tab.Screen
-        options={{
-          tabBarLabel: "Player",
-          tabBarIcon: ({ color }) => (
-            <FontAwesome5 name="compact-disc" size={24} color={color} />
-          ),
-        }}
-        name="player"
-        component={PlayerScreen}
-      />
-      <Tab.Screen
-        options={{
-          tabBarLabel: "Playlist",
-          tabBarIcon: ({ color }) => (
-            <MaterialIcons name="my-library-music" size={24} color={color} />
-          ),
-        }}
-        name="playlist"
-        component={PlaylistScreen}
-      />
-    </Tab.Navigator>
+      <Stack.Screen component={AudioListScreen} name="audiolists" />
+      <Stack.Screen component={PlayerScreen} name="player" />
+      <Stack.Screen component={PlaylistScreen} name="playlist" />
+    </Stack.Navigator>
   );
 }
 
-export default BottomTabs;
+export default AudioStack;
