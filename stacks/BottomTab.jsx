@@ -10,11 +10,11 @@ const Tab = createBottomTabNavigator();
 function BottomTabs() {
   return (
     <Tab.Navigator
-      activeColor="black"
-      inactiveColor="blue"
+      activeColor="#ff5f96"
+      inactiveColor="#ff5f96"
       initialRouteName="player"
       screenOptions={{
-        tabBarColor: "black",
+        tabBarColor: "#ff5f96",
         headerShown: false,
         tabBarStyle: {
           height: 60,
