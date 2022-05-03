@@ -10,15 +10,15 @@ import BottomModal from "../../components/BottomModal";
 const sound = new Audio.Sound();
 
 export default function AudioListScreen() {
+  const reduxData = useSelector((s) => s);
+  const musicList = reduxData.music;
   const [visible, setVisible] = useState(false);
   const [currentItem, setCurrentItem] = useState(null);
-  const reduxData = useSelector((s) => s);
   const [Loaded, SetLoaded] = useState(false);
   const [Loading, SetLoading] = useState(false);
   const [Playing, SetPlaying] = useState(false);
   const [Duration, SetDuration] = useState(0);
   const [Value, SetValue] = useState(0);
-  const musicList = reduxData.music;
 
   const openModal = async (val) => {
     setCurrentItem(val);
@@ -27,17 +27,26 @@ export default function AudioListScreen() {
 
   const PlayPause = async (val) => {
     const result = await sound.getStatusAsync();
+    if (result.isLoaded == true) {
+      if (val == currentItem) {
+        sound.pauseAsync();
+        SetPlaying(false);
+      } else if (val != currentItem) {
+        console.log("unloading sound ......");
+        await sound.unloadAsync();
+        setCurrentItem(val);
+        await sound.loadAsync({ uri: val.uri }, {}, true);
+        sound.playAsync();
+        SetPlaying(true);
+      }
+    }
     if (Playing === false) {
       if (result.isLoaded == false) {
+        setCurrentItem(val);
         await sound.loadAsync({ uri: val.uri }, {}, true);
       }
       sound.playAsync();
       SetPlaying(true);
-      console.log("lets play now");
-    } else if (Playing === true) {
-      sound.pauseAsync();
-      SetPlaying(false);
-      console.log("lets pause now");
     }
   };
 
