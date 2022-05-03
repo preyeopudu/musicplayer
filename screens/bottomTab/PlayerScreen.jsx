@@ -7,7 +7,7 @@ export default function PlayerScreen() {
   const reduxData = useSelector((s) => s);
   const musicList = reduxData.music;
 
-  return <Text>something coming soon</Text>;
+  return <View style={styles.container}></View>;
 }
 
 const styles = StyleSheet.create({

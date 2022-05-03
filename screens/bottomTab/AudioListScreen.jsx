@@ -6,6 +6,7 @@ import ConvertTime from "../../utility/ConvertTime";
 import { Audio } from "expo-av";
 import { Entypo } from "@expo/vector-icons";
 import BottomModal from "../../components/BottomModal";
+import { Play } from "../../utility/AudioController";
 
 const sound = new Audio.Sound();
 
@@ -25,6 +26,7 @@ export default function AudioListScreen() {
     setVisible(true);
   };
 
+  // currentItem,,Playing,setCurrentItem,SetPlaying
   const PlayPause = async (val) => {
     const result = await sound.getStatusAsync();
     if (result.isLoaded == true) {
@@ -32,7 +34,6 @@ export default function AudioListScreen() {
         sound.pauseAsync();
         SetPlaying(false);
       } else if (val != currentItem) {
-        console.log("unloading sound ......");
         await sound.unloadAsync();
         setCurrentItem(val);
         await sound.loadAsync({ uri: val.uri }, {}, true);
@@ -47,71 +48,6 @@ export default function AudioListScreen() {
       }
       sound.playAsync();
       SetPlaying(true);
-    }
-  };
-
-  const PlayAudio = async (uri) => {
-    try {
-      const checkLoading = await sound.getStatusAsync();
-      console.log(checkLoading.isLoaded);
-      if (checkLoading.isLoaded == false) {
-        const soundObj = await sound.loadAsync({ uri: uri }, {}, true);
-      }
-
-      sound.setOnPlaybackStatusUpdate(UpdateStatus);
-      const result = await sound.getStatusAsync();
-      if (result.isLoaded) {
-        if (result.isPlaying === false) {
-          sound.playAsync();
-          SetPlaying(true);
-        }
-      }
-    } catch (error) {
-      console.log(error);
-      SetPlaying(false);
-    }
-  };
-
-  const PauseAudio = async () => {
-    try {
-      const result = await sound.getStatusAsync();
-      if (result.isLoaded) {
-        if (result.isPlaying === true) {
-          sound.pauseAsync();
-          SetPlaying(false);
-        }
-      }
-    } catch (error) {
-      console.log(error);
-      SetPlaying(true);
-    }
-  };
-
-  const UpdateStatus = async (data) => {
-    try {
-      if (data.didJustFinish) {
-        ResetPlayer();
-      } else if (data.positionMillis) {
-        if (data.durationMillis) {
-          SetValue((data.positionMillis / data.durationMillis) * 100);
-        }
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const ResetPlayer = async () => {
-    try {
-      const checkLoading = await sound.getStatusAsync();
-      if (checkLoading.isLoaded === true) {
-        SetValue(0);
-        SetPlaying(false);
-        await sound.setPositionAsync(0);
-        await sound.stopAsync();
-      }
-    } catch (error) {
-      console.log(error);
     }
   };
 
@@ -140,7 +76,7 @@ export default function AudioListScreen() {
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <TouchableOpacity
-            onPress={() => PlayPause(item)}
+            onPress={() => Play(item)}
             activeOpacity={0.9}
             // onPress={() => {
             //   PlayAudio(item.uri);
