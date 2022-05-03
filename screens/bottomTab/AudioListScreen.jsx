@@ -25,50 +25,21 @@ export default function AudioListScreen() {
     setVisible(true);
   };
 
-  const PlaySong = async (val) => {
+  const PlayPause = async (val) => {
+    const result = await sound.getStatusAsync();
     if (Playing === false) {
-      PlayAudio(val.uri);
-    } else {
-      PauseAudio();
-      console.log("lets pause hmm");
-    }
-  };
-
-  const UpdateStatus = async (data) => {
-    try {
-      if (data.didJustFinish) {
-        ResetPlayer();
-      } else if (data.positionMillis) {
-        if (data.durationMillis) {
-          SetValue((data.positionMillis / data.durationMillis) * 100);
-        }
+      if (result.isLoaded == false) {
+        await sound.loadAsync({ uri: val.uri }, {}, true);
       }
-    } catch (error) {
-      console.log("Error");
+      sound.playAsync();
+      SetPlaying(true);
+      console.log("lets play now");
+    } else if (Playing === true) {
+      sound.pauseAsync();
+      SetPlaying(false);
+      console.log("lets pause now");
     }
   };
-
-  const ResetPlayer = async () => {
-    try {
-      const checkLoading = await sound.current.getStatusAsync();
-      if (checkLoading.isLoaded === true) {
-        SetValue(0);
-        SetPlaying(false);
-        await sound.setPositionAsync(0);
-        await sound.stopAsync();
-      }
-    } catch (error) {
-      console.log("Error");
-    }
-  };
-
-  // const LoadAudio = async (uri) => {
-  //   const checkLoading = await sound.getStatusAsync();
-  //   await sound.unloadAsync();
-  //   const result = await sound.loadAsync({ uri: uri }, {}, true);
-  //   sound.setOnPlaybackStatusUpdate(UpdateStatus);
-  //   SetDuration(result.durationMillis);
-  // };
 
   const PlayAudio = async (uri) => {
     try {
@@ -84,8 +55,6 @@ export default function AudioListScreen() {
         if (result.isPlaying === false) {
           sound.playAsync();
           SetPlaying(true);
-        } else if (resu) {
-          sound.pauseAsync();
         }
       }
     } catch (error) {
@@ -109,6 +78,42 @@ export default function AudioListScreen() {
     }
   };
 
+  const UpdateStatus = async (data) => {
+    try {
+      if (data.didJustFinish) {
+        ResetPlayer();
+      } else if (data.positionMillis) {
+        if (data.durationMillis) {
+          SetValue((data.positionMillis / data.durationMillis) * 100);
+        }
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const ResetPlayer = async () => {
+    try {
+      const checkLoading = await sound.getStatusAsync();
+      if (checkLoading.isLoaded === true) {
+        SetValue(0);
+        SetPlaying(false);
+        await sound.setPositionAsync(0);
+        await sound.stopAsync();
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  // const LoadAudio = async (uri) => {
+  //   const checkLoading = await sound.getStatusAsync();
+  //   await sound.unloadAsync();
+  //   const result = await sound.loadAsync({ uri: uri }, {}, true);
+  //   sound.setOnPlaybackStatusUpdate(UpdateStatus);
+  //   SetDuration(result.durationMillis);
+  // };
+
   // const PlayAudio = async (uri, playbackObject, shouldPlay = true) => {
   //   const { sound: playbackObject } = await Audio.Sound.createAsync(
   //     { uri: uri }
@@ -126,7 +131,7 @@ export default function AudioListScreen() {
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <TouchableOpacity
-            onPress={() => PlaySong(item)}
+            onPress={() => PlayPause(item)}
             activeOpacity={0.9}
             // onPress={() => {
             //   PlayAudio(item.uri);
