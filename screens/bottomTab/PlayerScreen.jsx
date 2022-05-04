@@ -19,18 +19,14 @@ export default function PlayerScreen({ route }) {
   const [play, setPlay] = useState(false);
 
   const HandlePlay = async (item) => {
-    if (item == currentItem) {
-      if (musicInfo.isPlaying == true) {
-        setPlay(true);
-        dispatch(SetInfo(await Pause()));
-      }
-    } else {
+    if (item != currentItem) {
+      setPlay(true);
       dispatch(SetInfo(await Start(item)));
       dispatch(SetCurrent(item));
     }
     if (play == true) {
-      dispatch(SetInfo(await Pause()));
       setPlay(false);
+      dispatch(SetInfo(await Pause()));
     } else if (play == false) {
       setPlay(true);
       dispatch(SetInfo(await Play(item)));
