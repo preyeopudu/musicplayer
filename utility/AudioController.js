@@ -24,6 +24,8 @@ export const Pause = async (val) => {
   if (status.isLoaded == true && status.isPlaying == true) {
     await sound.pauseAsync();
   }
+  let s = await sound.getStatusAsync();
+  return s;
 };
 
 export const SeekUpdate = async (data) => {

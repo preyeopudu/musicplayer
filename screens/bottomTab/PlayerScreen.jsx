@@ -22,18 +22,14 @@ export default function PlayerScreen({ route }) {
     if (item == currentItem) {
       if (musicInfo.isPlaying == true) {
         setPlay(true);
-        Pause();
-      } else if (play == false) {
-        setPlay(true);
-        dispatch(SetInfo(await Play(item)));
-        dispatch(SetCurrent(item));
+        dispatch(SetInfo(await Pause()));
       }
     } else {
       dispatch(SetInfo(await Start(item)));
       dispatch(SetCurrent(item));
     }
     if (play == true) {
-      Pause();
+      dispatch(SetInfo(await Pause()));
       setPlay(false);
     } else if (play == false) {
       setPlay(true);
@@ -43,8 +39,6 @@ export default function PlayerScreen({ route }) {
   };
 
   useEffect(() => {
-    console.log(musicInfo);
-    console.log(currentItem);
     if (route.params.item == currentItem && musicInfo.isPlaying == true) {
       setPlay(true);
     }
