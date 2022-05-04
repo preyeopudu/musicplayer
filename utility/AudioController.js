@@ -2,11 +2,13 @@ import { Audio } from "expo-av";
 const sound = new Audio.Sound();
 
 export const Play = async (val) => {
-  const status = await sound.getStatusAsync();
+  let status = await sound.getStatusAsync();
   if (status.isLoaded == false) {
     await sound.loadAsync({ uri: val.uri });
   }
   await sound.playAsync();
+  let s = await sound.getStatusAsync();
+  return s;
 };
 
 export const Pause = async (val) => {

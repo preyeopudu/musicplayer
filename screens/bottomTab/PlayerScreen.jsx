@@ -12,12 +12,12 @@ import MarqueeText from "react-native-marquee";
 export default function PlayerScreen({ route }) {
   const [play, setPlay] = useState(false);
 
-  const HandlePlay = (item) => {
+  const HandlePlay = async (item) => {
     if (play == true) {
       Pause();
       setPlay(false);
     } else if (play == false) {
-      Play(item);
+      console.log(await Play(item));
       setPlay(true);
     }
   };
@@ -25,7 +25,6 @@ export default function PlayerScreen({ route }) {
   const reduxData = useSelector((s) => s);
   const musicList = reduxData.music;
   const { navigate, goBack } = useNavigation();
-  console.log(route.params);
   return (
     <View style={styles.container}>
       <View style={styles.headerContainer}>

@@ -1,4 +1,4 @@
-const PlayReducer = (state = false, action) => {
+const CurrentMusicReducer = (state = {}, action) => {
   switch (action.type) {
     case "PLAYING":
       return true;
