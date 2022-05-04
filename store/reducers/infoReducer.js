@@ -1,6 +1,6 @@
 const InfoReducer = (state = {}, action) => {
   switch (action.type) {
-    case "PLAYING":
+    case "PLAY":
       let State = action.state;
       return State;
     default:

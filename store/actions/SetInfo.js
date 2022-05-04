@@ -1,6 +1,6 @@
 export const SetInfo = (state) => {
   const action = {
-    type: "PLAYING",
+    type: "PLAY",
     state,
   };
   return action;

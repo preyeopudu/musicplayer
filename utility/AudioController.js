@@ -11,6 +11,14 @@ export const Play = async (val) => {
   return s;
 };
 
+export const Start = async (val) => {
+  await sound.unloadAsync();
+  await sound.loadAsync({ uri: val.uri });
+  await sound.playAsync();
+  let s = await sound.getStatusAsync();
+  return s;
+};
+
 export const Pause = async (val) => {
   const status = await sound.getStatusAsync();
   if (status.isLoaded == true && status.isPlaying == true) {
@@ -26,6 +34,6 @@ export const SeekUpdate = async (data) => {
       await sound.setPositionAsync(Math.round(result));
     }
   } catch (error) {
-    console.log("Error");
+    console.log(error);
   }
 };

@@ -4,7 +4,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { Entypo, AntDesign } from "@expo/vector-icons";
 import { ScaledSheet } from "react-native-size-matters";
 import Slider from "@react-native-community/slider";
-import { Pause, Play, SeekUpdate } from "../../utility/AudioController";
+import { Pause, Play, SeekUpdate, Start } from "../../utility/AudioController";
 import { useNavigation } from "@react-navigation/native";
 import MarqueeText from "react-native-marquee";
 import { SetCurrent } from "../../store/actions/SetCurrent";
@@ -14,22 +14,42 @@ export default function PlayerScreen({ route }) {
   let reduxData = useSelector((s) => s);
   let currentItem = reduxData.current;
   let musicInfo = reduxData.info;
-  console.log(currentItem);
+
   const dispatch = useDispatch();
   const [play, setPlay] = useState(false);
 
   const HandlePlay = async (item) => {
+    if (item == currentItem) {
+      if (musicInfo.isPlaying == true) {
+        setPlay(true);
+        Pause();
+      } else if (play == false) {
+        setPlay(true);
+        dispatch(SetInfo(await Play(item)));
+        dispatch(SetCurrent(item));
+      }
+    } else {
+      dispatch(SetInfo(await Start(item)));
+      dispatch(SetCurrent(item));
+    }
     if (play == true) {
       Pause();
       setPlay(false);
     } else if (play == false) {
+      setPlay(true);
       dispatch(SetInfo(await Play(item)));
       dispatch(SetCurrent(item));
-      setPlay(true);
     }
   };
 
-  const musicList = reduxData.music;
+  useEffect(() => {
+    console.log(musicInfo);
+    console.log(currentItem);
+    if (route.params.item == currentItem && musicInfo.isPlaying == true) {
+      setPlay(true);
+    }
+  }, []);
+
   const { navigate, goBack } = useNavigation();
   return (
     <View style={styles.container}>
