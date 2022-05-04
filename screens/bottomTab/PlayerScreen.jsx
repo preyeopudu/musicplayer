@@ -78,14 +78,19 @@ export default function PlayerScreen({ route }) {
       </View>
 
       <View style={styles.footer}>
-        <Slider
-          style={{ width: "90%", alignSelf: "center" }}
-          minimumValue={0}
-          maximumValue={100}
-          value={30}
-          onSlidingComplete={(data) => SeekUpdate(data)}
-          minimumTrackTintColor={"dodgerblue"}
-        />
+        <View style={styles.sliderContainer}>
+          <Text style={styles.sliderText}>00:00</Text>
+          <Slider
+            style={styles.slider}
+            minimumValue={0}
+            maximumValue={100}
+            value={0}
+            onSlidingComplete={(data) => SeekUpdate(data)}
+            minimumTrackTintColor={"dodgerblue"}
+          />
+          <Text style={styles.sliderText}>00:00</Text>
+        </View>
+
         <View style={styles.controller}>
           <View style={[styles.button]}>
             <AntDesign name="stepbackward" size={15} color="#808080" />
@@ -163,5 +168,17 @@ const styles = ScaledSheet.create({
     alignItems: "center",
     paddingTop: "20@vs",
     paddingBottom: "5@vs",
+  },
+  sliderContainer: {
+    flexDirection: "row",
+    justifyContent: "space-evenly",
+    marginBottom: "15@vs",
+  },
+  slider: {
+    width: "200@s",
+  },
+  sliderText: {
+    fontSize: "12@s",
+    color: "#808080",
   },
 });
