@@ -1,4 +1,4 @@
-const MusicReducer = (state = [], action) => {
+const MusicReducer = (state = {}, action) => {
   switch (action.type) {
     case "GETMUSIC":
       let State = action.music;

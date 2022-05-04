@@ -1,4 +1,4 @@
-const CurrentMusicReducer = (state = {}, action) => {
+const InfoReducer = (state = {}, action) => {
   switch (action.type) {
     case "PLAYING":
       let State = action.state;
@@ -8,4 +8,4 @@ const CurrentMusicReducer = (state = {}, action) => {
   }
 };
 
-export default CurrentMusicReducer;
+export default InfoReducer;

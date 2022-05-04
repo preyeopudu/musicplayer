@@ -1,28 +1,32 @@
-import { StatusBar } from "expo-status-bar";
-import React, { useRef, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Text, View, TouchableOpacity, Image } from "react-native";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { Entypo, AntDesign } from "@expo/vector-icons";
 import { ScaledSheet } from "react-native-size-matters";
 import Slider from "@react-native-community/slider";
 import { Pause, Play, SeekUpdate } from "../../utility/AudioController";
 import { useNavigation } from "@react-navigation/native";
 import MarqueeText from "react-native-marquee";
+import { SetCurrent } from "../../store/actions/SetCurrent";
+import { SetInfo } from "../../store/actions/SetInfo";
 
 export default function PlayerScreen({ route }) {
+  let reduxData = useSelector((s) => s);
+  let currentItem = reduxData.current;
+  let musicInfo = reduxData.info;
+  console.log(musicInfo);
+  const dispatch = useDispatch();
   const [play, setPlay] = useState(false);
-
   const HandlePlay = async (item) => {
     if (play == true) {
       Pause();
       setPlay(false);
     } else if (play == false) {
-      console.log(await Play(item));
+      dispatch(SetInfo(await Play(item)));
       setPlay(true);
     }
   };
 
-  const reduxData = useSelector((s) => s);
   const musicList = reduxData.music;
   const { navigate, goBack } = useNavigation();
   return (
