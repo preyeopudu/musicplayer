@@ -14,15 +14,17 @@ export default function PlayerScreen({ route }) {
   let reduxData = useSelector((s) => s);
   let currentItem = reduxData.current;
   let musicInfo = reduxData.info;
-  console.log(musicInfo);
+  console.log(currentItem);
   const dispatch = useDispatch();
   const [play, setPlay] = useState(false);
+
   const HandlePlay = async (item) => {
     if (play == true) {
       Pause();
       setPlay(false);
     } else if (play == false) {
       dispatch(SetInfo(await Play(item)));
+      dispatch(SetCurrent(item));
       setPlay(true);
     }
   };
