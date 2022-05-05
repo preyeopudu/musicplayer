@@ -35,16 +35,24 @@ export default function PlayerScreen({ route }) {
     setPlay(!play);
     if (item != currentItem && musicInfo.isLoaded == true) {
       if (musicInfo.isPlaying == true && play == true) {
+        console.log(0);
         setPlay(false);
         Pause(item);
-      } else {
+      } else if (play == false) {
+        console.log(1);
         setPlay(true);
         Start(item);
+      } else if (play == true) {
+        Pause(item);
       }
+      console.log("here");
     } else {
+      console.log(2);
       if (play == false) {
+        console.log(3);
         Play(item);
       } else if (play == true) {
+        console.log(4);
         Pause(item);
       }
     }
