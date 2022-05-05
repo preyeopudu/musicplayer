@@ -33,7 +33,7 @@ export default function PlayerScreen({ route }) {
 
   const HandleAudio = () => {
     setPlay(!play);
-    if (item != currentItem && musicInfo.isLoaded == false) {
+    if (item != currentItem) {
       Start(item);
     } else {
       if (play == false) {
