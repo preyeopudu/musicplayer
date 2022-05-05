@@ -34,10 +34,14 @@ export default function PlayerScreen({ route }) {
   const HandleAudio = () => {
     setPlay(!play);
     if (item != currentItem && musicInfo.isLoaded == true) {
-      console.log(1);
-      Start(item);
+      if (musicInfo.isPlaying == true && play == true) {
+        setPlay(false);
+        Pause(item);
+      } else {
+        setPlay(true);
+        Start(item);
+      }
     } else {
-      console.log(2);
       if (play == false) {
         Play(item);
       } else if (play == true) {
