@@ -6,29 +6,43 @@ import Slider from "@react-native-community/slider";
 import { useNavigation } from "@react-navigation/native";
 import MarqueeText from "react-native-marquee";
 import ConvertTime from "../../utility/ConvertTime";
-import { Pause, Play } from "../../utility/AudioController";
+import { Pause, Play, Start } from "../../utility/AudioController";
 import store from "../../store";
 
 export default function PlayerScreen({ route }) {
   const [play, setPlay] = useState(false);
-  const [Duration, SetDuration] = React.useState(0);
-  const [Value, SetValue] = React.useState(0);
+  const [loaded, setLoaded] = useState();
+  const [Duration, SetDuration] = useState(0);
+  const [Value, SetValue] = useState(0);
   const { goBack } = useNavigation();
   const currentItem = store.getState().current;
   const musicInfo = store.getState().info;
 
   const { item } = route.params;
 
+  useEffect(() => {
+    console.log(item);
+    console.log(currentItem);
+    console.log(musicInfo);
+    if (item == currentItem && musicInfo.isPlaying == true) {
+      setPlay(true);
+    } else if (musicInfo.isLoaded == true) {
+      setLoaded(true);
+    }
+  }, []);
+
   const HandleAudio = () => {
     setPlay(!play);
-    if (play == false) {
-      Play(item);
-    } else if (play == true) {
-      Pause();
+    if (item != currentItem && musicInfo.isLoaded == false) {
+      Start(item);
+    } else {
+      if (play == false) {
+        Play(item);
+      } else if (play == true) {
+        Pause(item);
+      }
     }
   };
-
-  useEffect(() => {}, [play]);
 
   // const HandlePlay = async (item) => {
   //   if (item != currentItem) {
@@ -45,15 +59,6 @@ export default function PlayerScreen({ route }) {
   //     dispatch(SetCurrent(item));
   //   }
   // };
-
-  useEffect(() => {
-    console.log(item);
-    console.log(currentItem);
-    console.log(musicInfo.isPlaying);
-    if (item == currentItem && musicInfo.isPlaying == true) {
-      setPlay(true);
-    }
-  }, []);
 
   return (
     <View style={styles.container}>

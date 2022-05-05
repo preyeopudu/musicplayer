@@ -47,7 +47,7 @@ const ResetPlayer = async () => {
       await sound.stopAsync();
     }
   } catch (error) {
-    console.log("Error");
+    console.log(error);
   }
 };
 
@@ -68,18 +68,19 @@ export const GetStatus = async () => {
   return status;
 };
 
+// sound.setOnPlaybackStatusUpdate(() => {
+//   console.log("hello");
+// });
+
 export const Start = async (val) => {
   await sound.unloadAsync();
   await sound.loadAsync({ uri: val.uri });
   await sound.playAsync();
-  sound.setOnPlaybackStatusUpdate(() => {
-    console.log("hello");
-  });
   store.dispatch(SetInfo(await sound.getStatusAsync()));
   store.dispatch(SetCurrent(val));
 };
 
-export const Pause = async () => {
+export const Pause = async (val) => {
   await sound.pauseAsync();
   store.dispatch(SetInfo(await sound.getStatusAsync()));
   store.dispatch(SetCurrent(val));
