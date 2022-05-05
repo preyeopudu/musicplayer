@@ -21,9 +21,9 @@ export default function PlayerScreen({ route }) {
   const { item } = route.params;
 
   useEffect(() => {
-    console.log(item);
-    console.log(currentItem);
-    console.log(musicInfo);
+    // console.log(item);
+    // console.log(currentItem);
+    // console.log(musicInfo);
     if (item == currentItem && musicInfo.isPlaying == true) {
       setPlay(true);
     } else if (musicInfo.isLoaded == true) {
@@ -33,9 +33,11 @@ export default function PlayerScreen({ route }) {
 
   const HandleAudio = () => {
     setPlay(!play);
-    if (item != currentItem) {
+    if (item != currentItem && musicInfo.isLoaded == true) {
+      console.log(1);
       Start(item);
     } else {
+      console.log(2);
       if (play == false) {
         Play(item);
       } else if (play == true) {
