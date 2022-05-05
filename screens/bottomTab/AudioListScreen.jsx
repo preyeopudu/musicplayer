@@ -13,11 +13,6 @@ export default function AudioListScreen() {
   const musicList = reduxData.music;
   const [visible, setVisible] = useState(false);
   const [currentItem, setCurrentItem] = useState(null);
-  const [Loaded, SetLoaded] = useState(false);
-  const [Loading, SetLoading] = useState(false);
-  const [Playing, SetPlaying] = useState(false);
-  const [Duration, SetDuration] = useState(0);
-  const [Value, SetValue] = useState(0);
   const { navigate } = useNavigation();
 
   const openModal = async (val) => {

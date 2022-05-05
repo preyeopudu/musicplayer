@@ -1,6 +1,6 @@
 export const SetCurrent = (state) => {
   const action = {
-    type: "PLAYING",
+    type: "SETCURRENT",
     state,
   };
   return action;

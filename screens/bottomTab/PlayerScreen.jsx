@@ -1,46 +1,60 @@
 import React, { useEffect, useState } from "react";
 import { Text, View, TouchableOpacity, Image } from "react-native";
-import { useSelector, useDispatch } from "react-redux";
 import { Entypo, AntDesign } from "@expo/vector-icons";
 import { ScaledSheet } from "react-native-size-matters";
 import Slider from "@react-native-community/slider";
-import { Pause, Play, SeekUpdate, Start } from "../../utility/AudioController";
 import { useNavigation } from "@react-navigation/native";
 import MarqueeText from "react-native-marquee";
-import { SetCurrent } from "../../store/actions/SetCurrent";
-import { SetInfo } from "../../store/actions/SetInfo";
+import ConvertTime from "../../utility/ConvertTime";
+import { Pause, Play } from "../../utility/AudioController";
+import store from "../../store";
 
 export default function PlayerScreen({ route }) {
-  let reduxData = useSelector((s) => s);
-  let currentItem = reduxData.current;
-  let musicInfo = reduxData.info;
-
-  const dispatch = useDispatch();
   const [play, setPlay] = useState(false);
+  const [Duration, SetDuration] = React.useState(0);
+  const [Value, SetValue] = React.useState(0);
+  const { goBack } = useNavigation();
+  const currentItem = store.getState().current;
+  const musicInfo = store.getState().info;
 
-  const HandlePlay = async (item) => {
-    if (item != currentItem) {
-      setPlay(true);
-      dispatch(SetInfo(await Start(item)));
-      dispatch(SetCurrent(item));
-    }
-    if (play == true) {
-      setPlay(false);
-      dispatch(SetInfo(await Pause()));
-    } else if (play == false) {
-      setPlay(true);
-      dispatch(SetInfo(await Play(item)));
-      dispatch(SetCurrent(item));
+  const { item } = route.params;
+
+  const HandleAudio = () => {
+    setPlay(!play);
+    if (play == false) {
+      Play(item);
+    } else if (play == true) {
+      Pause();
     }
   };
 
+  useEffect(() => {}, [play]);
+
+  // const HandlePlay = async (item) => {
+  //   if (item != currentItem) {
+  //     setPlay(true);
+  //     dispatch(SetInfo(await Start(item)));
+  //     dispatch(SetCurrent(item));
+  //   }
+  //   if (play == true) {
+  //     setPlay(false);
+  //     dispatch(SetInfo(await Pause()));
+  //   } else if (play == false) {
+  //     setPlay(true);
+  //     dispatch(SetInfo(await Play(item)));
+  //     dispatch(SetCurrent(item));
+  //   }
+  // };
+
   useEffect(() => {
-    if (route.params.item == currentItem && musicInfo.isPlaying == true) {
+    console.log(item);
+    console.log(currentItem);
+    console.log(musicInfo.isPlaying);
+    if (item == currentItem && musicInfo.isPlaying == true) {
       setPlay(true);
     }
   }, []);
 
-  const { navigate, goBack } = useNavigation();
   return (
     <View style={styles.container}>
       <View style={styles.headerContainer}>
@@ -88,7 +102,9 @@ export default function PlayerScreen({ route }) {
             onSlidingComplete={(data) => SeekUpdate(data)}
             minimumTrackTintColor={"dodgerblue"}
           />
-          <Text style={styles.sliderText}>00:00</Text>
+          <Text style={styles.sliderText}>
+            {ConvertTime(route.params.item.duration / 60)}
+          </Text>
         </View>
 
         <View style={styles.controller}>
@@ -97,7 +113,7 @@ export default function PlayerScreen({ route }) {
           </View>
           <TouchableOpacity
             style={[styles.button, { width: 45, height: 45 }]}
-            onPress={() => HandlePlay(route.params.item)}
+            onPress={() => HandleAudio()}
           >
             {play ? (
               <AntDesign name="pause" size={22} color="#808080" />

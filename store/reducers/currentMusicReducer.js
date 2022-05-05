@@ -1,6 +1,6 @@
 const CurrentMusicReducer = (state = {}, action) => {
   switch (action.type) {
-    case "PLAYING":
+    case "SETCURRENT":
       let State = action.state;
       return State;
     default:
