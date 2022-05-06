@@ -16,6 +16,7 @@ import ConvertTime from "../../utility/ConvertTime";
 import { Pause, Play, Start } from "../../utility/AudioController";
 import store from "../../store";
 import { OffScreen, OnScreen } from "../../store/actions/SetOnScreen";
+import { SetPlaying } from "../../store/actions/SetPlaying";
 
 export default function PlayerScreen({ route }) {
   const [play, setPlay] = useState(false);
@@ -37,8 +38,8 @@ export default function PlayerScreen({ route }) {
   };
 
   useEffect(() => {
+    store.dispatch(SetPlaying(false));
     store.dispatch(OnScreen());
-    console.log(store.getState().screen);
     if (item == currentItem && musicInfo.isPlaying == true) {
       //checks if on new screen and a song is playing
       setPlay(true);
@@ -48,26 +49,29 @@ export default function PlayerScreen({ route }) {
   if (isNaN(progress)) {
     progress = 0;
   }
-  console.log(progress);
+
   // console.log(duration);
   // console.log(duration / 1000);
 
   const HandleAudio = () => {
+    SetPlaying(!play);
     setPlay(!play);
     if (item != currentItem && musicInfo.isLoaded == true) {
       //check if a music was being played
       if (musicInfo.isPlaying == true && play == true) {
         setPlay(false);
+        SetPlaying(false);
         Pause(item);
       } else if (play == false) {
+        SetPlaying(true);
         setPlay(true);
-        Start(item, SetDuration, play);
+        Start(item, SetDuration);
       } else if (play == true) {
         Pause(item);
       }
     } else {
       if (play == false) {
-        Play(item, SetDuration, play);
+        Play(item, SetDuration);
       } else if (play == true) {
         Pause(item);
       }
