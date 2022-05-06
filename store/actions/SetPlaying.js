@@ -1,13 +1,7 @@
-export const Playing = () => {
+export const SetPlaying = (playing) => {
   const action = {
-    type: "PLAYING",
-  };
-  return action;
-};
-
-export const NotPlaying = () => {
-  const action = {
-    type: "NOTPLAYING",
+    type: "SETPLAYING",
+    state: playing,
   };
   return action;
 };

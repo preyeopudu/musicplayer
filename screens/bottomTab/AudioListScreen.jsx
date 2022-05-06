@@ -7,7 +7,7 @@ import { Audio } from "expo-av";
 import { Entypo } from "@expo/vector-icons";
 import BottomModal from "../../components/BottomModal";
 import { useNavigation } from "@react-navigation/native";
-import { OffScreen, OnScreen } from "../../store/actions/SetOnScreen";
+import { OffScreen } from "../../store/actions/SetOnScreen";
 import store from "../../store";
 export default function AudioListScreen() {
   const reduxData = useSelector((s) => s);
