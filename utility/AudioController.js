@@ -7,19 +7,22 @@ const currentItem = store.getState().current;
 const UpdateStatus = async (setDuration, val, play) => {
   try {
     let data = await sound.getStatusAsync();
-    console.log(play);
-    if (store.getState().screen == false) {
+    console.log(store.getState().current);
+    if (
+      store.getState().info.isPlaying == true &&
+      val != store.getState().current
+    ) {
       console.log("ill be doing nothing");
     } else {
-      if (store.getState().screen == true && play == false) {
-        console.log(2);
-        setDuration(data.positionMillis / 1000);
-      } else if (
-        store.getState().info.isPlaying == true &&
-        val != currentItem
-      ) {
-        console.log(1);
-      }
+      // if (store.getState().screen == true && play == false) {
+      //   console.log(2);
+      //   setDuration(data.positionMillis / 1000);
+      // } else if (
+      //   store.getState().info.isPlaying == true &&
+      //   val != currentItem
+      // ) {
+      //   console.log(1);
+      // }
     }
     // } else if (data.isPlaying == true && store.getState().screen == true) {
   } catch (error) {

@@ -3,6 +3,7 @@ import MusicReducer from "./reducers/musicreducer";
 import InfoReducer from "./reducers/infoReducer";
 import CurrentMusicReducer from "./reducers/currentMusicReducer";
 import ScreenReducer from "./reducers/ScreenReducer";
+import PlayingReducer from "./reducers/PlayingReducer";
 
 const store = configureStore({
   reducer: {
@@ -10,6 +11,7 @@ const store = configureStore({
     info: InfoReducer,
     current: CurrentMusicReducer,
     screen: ScreenReducer,
+    playing: PlayingReducer,
   },
 });
 

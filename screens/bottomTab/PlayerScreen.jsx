@@ -29,7 +29,6 @@ export default function PlayerScreen({ route }) {
 
   BackHandler.addEventListener("hardwareBackPress", () => {
     store.dispatch(OffScreen());
-    console.log(1111111);
   });
 
   const HandleGoBack = () => {
