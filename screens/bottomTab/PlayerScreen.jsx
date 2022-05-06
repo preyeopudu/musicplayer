@@ -1,5 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { Text, View, TouchableOpacity, Image } from "react-native";
+import {
+  Text,
+  View,
+  TouchableOpacity,
+  Image,
+  BackHandler,
+  Alert,
+} from "react-native";
 import { Entypo, AntDesign } from "@expo/vector-icons";
 import { ScaledSheet } from "react-native-size-matters";
 import Slider from "@react-native-community/slider";
@@ -19,6 +26,11 @@ export default function PlayerScreen({ route }) {
   const musicInfo = store.getState().info;
   const screen = store.getState().screen;
   const { item } = route.params;
+
+  BackHandler.addEventListener("hardwareBackPress", () => {
+    store.dispatch(OffScreen());
+    console.log(1111111);
+  });
 
   const HandleGoBack = () => {
     store.dispatch(OffScreen());
@@ -50,13 +62,13 @@ export default function PlayerScreen({ route }) {
         Pause(item);
       } else if (play == false) {
         setPlay(true);
-        Start(item, SetDuration);
+        Start(item, SetDuration, play);
       } else if (play == true) {
         Pause(item);
       }
     } else {
       if (play == false) {
-        Play(item, SetDuration);
+        Play(item, SetDuration, play);
       } else if (play == true) {
         Pause(item);
       }

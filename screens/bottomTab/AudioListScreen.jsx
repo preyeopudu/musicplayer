@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FlatList, Text, View, Image, TouchableOpacity } from "react-native";
 import { ScaledSheet } from "react-native-size-matters";
 import { useSelector } from "react-redux";
@@ -7,14 +7,14 @@ import { Audio } from "expo-av";
 import { Entypo } from "@expo/vector-icons";
 import BottomModal from "../../components/BottomModal";
 import { useNavigation } from "@react-navigation/native";
-
+import { OffScreen, OnScreen } from "../../store/actions/SetOnScreen";
+import store from "../../store";
 export default function AudioListScreen() {
   const reduxData = useSelector((s) => s);
   const musicList = reduxData.music;
   const [visible, setVisible] = useState(false);
   const [currentItem, setCurrentItem] = useState(null);
   const { navigate } = useNavigation();
-
   const openModal = async (val) => {
     setCurrentItem(val);
     setVisible(true);
@@ -23,6 +23,11 @@ export default function AudioListScreen() {
   const HandleClick = (item) => {
     navigate("player", { item });
   };
+
+  useEffect(() => {
+    store.dispatch(OffScreen());
+    console.log(store.getState().screen);
+  }, []);
 
   return (
     <View>

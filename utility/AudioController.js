@@ -1,18 +1,27 @@
 import { Audio } from "expo-av";
-import { State } from "react-native-gesture-handler";
 const sound = new Audio.Sound();
 import store from "../store";
 import { SetCurrent } from "../store/actions/SetCurrent";
 import { SetInfo } from "../store/actions/SetInfo";
 const currentItem = store.getState().current;
-const UpdateStatus = async (setDuration, val) => {
+const UpdateStatus = async (setDuration, val, play) => {
   try {
     let data = await sound.getStatusAsync();
-    console.log(store.getState().info);
-    if (store.getState().info.isPlaying == true && val != currentItem) {
-    } else if (data.isPlaying == true && store.getState().screen == true) {
-      setDuration(data.positionMillis / 1000);
+    console.log(play);
+    if (store.getState().screen == false) {
+      console.log("ill be doing nothing");
+    } else {
+      if (store.getState().screen == true && play == false) {
+        console.log(2);
+        setDuration(data.positionMillis / 1000);
+      } else if (
+        store.getState().info.isPlaying == true &&
+        val != currentItem
+      ) {
+        console.log(1);
+      }
     }
+    // } else if (data.isPlaying == true && store.getState().screen == true) {
   } catch (error) {
     console.log(error);
   }
@@ -32,12 +41,12 @@ const ResetPlayer = async () => {
   }
 };
 
-export const Play = async (val, setDuration, onScreen) => {
+export const Play = async (val, setDuration, play) => {
   let status = await sound.getStatusAsync();
   if (status.isLoaded == false) {
     await sound.loadAsync({ uri: val.uri });
   }
-  sound.setOnPlaybackStatusUpdate(() => UpdateStatus(setDuration, val));
+  sound.setOnPlaybackStatusUpdate(() => UpdateStatus(setDuration, val, play));
   await sound.playAsync();
   store.dispatch(SetInfo(await sound.getStatusAsync()));
   store.dispatch(SetCurrent(val));
@@ -49,14 +58,10 @@ export const GetStatus = async () => {
   return status;
 };
 
-// sound.setOnPlaybackStatusUpdate(() => {
-//   console.log("hello");
-// });
-
-export const Start = async (val, setDuration) => {
+export const Start = async (val, setDuration, play) => {
   await sound.unloadAsync();
   await sound.loadAsync({ uri: val.uri });
-  sound.setOnPlaybackStatusUpdate(() => UpdateStatus(setDuration, val));
+  sound.setOnPlaybackStatusUpdate(() => UpdateStatus(setDuration, val, play));
   await sound.playAsync();
   store.dispatch(SetInfo(await sound.getStatusAsync()));
   store.dispatch(SetCurrent(val));
