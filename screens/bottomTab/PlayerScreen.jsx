@@ -12,11 +12,17 @@ import store from "../../store";
 export default function PlayerScreen({ route }) {
   const [play, setPlay] = useState(false);
   const [duration, SetDuration] = useState(0);
+  const [onScreen, setOnscreen] = useState(true);
   const [Value, SetValue] = useState(0);
   const { goBack } = useNavigation();
   const currentItem = store.getState().current;
   const musicInfo = store.getState().info;
   const { item } = route.params;
+
+  const HandleGoBack = () => {
+    setOnscreen(false);
+    goBack();
+  };
 
   useEffect(() => {
     if (item == currentItem && musicInfo.isPlaying == true) {
@@ -45,7 +51,7 @@ export default function PlayerScreen({ route }) {
       }
     } else {
       if (play == false) {
-        Play(item, SetDuration);
+        Play(item, SetDuration, onScreen);
       } else if (play == true) {
         Pause(item);
       }
