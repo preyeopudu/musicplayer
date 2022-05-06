@@ -1,18 +1,17 @@
 import { Audio } from "expo-av";
+import { State } from "react-native-gesture-handler";
 const sound = new Audio.Sound();
 import store from "../store";
 import { SetCurrent } from "../store/actions/SetCurrent";
 import { SetInfo } from "../store/actions/SetInfo";
-
-const UpdateStatus = async (setDuration) => {
+const currentItem = store.getState().current;
+const UpdateStatus = async (setDuration, val) => {
   try {
     let data = await sound.getStatusAsync();
-    if (data.isPlaying && store.getState().screen == true) {
+    console.log(store.getState().info);
+    if (store.getState().info.isPlaying == true && val != currentItem) {
+    } else if (data.isPlaying == true && store.getState().screen == true) {
       setDuration(data.positionMillis / 1000);
-    } else if (data.positionMillis) {
-      if (data.durationMillis) {
-        // SetValue((data.positionMillis / data.durationMillis) * 100);
-      }
     }
   } catch (error) {
     console.log(error);
@@ -38,9 +37,9 @@ export const Play = async (val, setDuration, onScreen) => {
   if (status.isLoaded == false) {
     await sound.loadAsync({ uri: val.uri });
   }
-  sound.setOnPlaybackStatusUpdate(() => UpdateStatus(setDuration));
+  sound.setOnPlaybackStatusUpdate(() => UpdateStatus(setDuration, val));
   await sound.playAsync();
-  store.dispatch(SetCurrent(await sound.getStatusAsync()));
+  store.dispatch(SetInfo(await sound.getStatusAsync()));
   store.dispatch(SetCurrent(val));
 };
 
@@ -54,9 +53,10 @@ export const GetStatus = async () => {
 //   console.log("hello");
 // });
 
-export const Start = async (val) => {
+export const Start = async (val, setDuration) => {
   await sound.unloadAsync();
   await sound.loadAsync({ uri: val.uri });
+  sound.setOnPlaybackStatusUpdate(() => UpdateStatus(setDuration, val));
   await sound.playAsync();
   store.dispatch(SetInfo(await sound.getStatusAsync()));
   store.dispatch(SetCurrent(val));

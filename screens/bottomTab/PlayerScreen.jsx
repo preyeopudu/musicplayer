@@ -29,6 +29,7 @@ export default function PlayerScreen({ route }) {
     store.dispatch(OnScreen());
     console.log(store.getState().screen);
     if (item == currentItem && musicInfo.isPlaying == true) {
+      //checks if on new screen and a song is playing
       setPlay(true);
     }
   }, []);
@@ -49,7 +50,7 @@ export default function PlayerScreen({ route }) {
         Pause(item);
       } else if (play == false) {
         setPlay(true);
-        Start(item);
+        Start(item, SetDuration);
       } else if (play == true) {
         Pause(item);
       }
