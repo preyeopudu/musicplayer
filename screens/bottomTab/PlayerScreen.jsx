@@ -16,7 +16,6 @@ export default function PlayerScreen({ route }) {
   const { goBack } = useNavigation();
   const currentItem = store.getState().current;
   const musicInfo = store.getState().info;
-
   const { item } = route.params;
 
   useEffect(() => {
@@ -24,8 +23,13 @@ export default function PlayerScreen({ route }) {
       setPlay(true);
     }
   }, []);
-
-  console.log(duration);
+  let progress = (duration / currentItem.duration) * 100;
+  if (isNaN(progress)) {
+    progress = 0;
+  }
+  console.log(progress);
+  // console.log(duration);
+  // console.log(duration / 1000);
 
   const HandleAudio = () => {
     setPlay(!play);
@@ -91,8 +95,8 @@ export default function PlayerScreen({ route }) {
             style={styles.slider}
             minimumValue={0}
             maximumValue={100}
-            value={duration}
-            onSlidingComplete={(data) => SeekUpdate(data)}
+            value={progress}
+            onSlidingComplete={(data) => {}}
             minimumTrackTintColor={"dodgerblue"}
           />
           <Text style={styles.sliderText}>

@@ -7,9 +7,8 @@ import { SetInfo } from "../store/actions/SetInfo";
 const UpdateStatus = async (setDuration) => {
   try {
     let data = await sound.getStatusAsync();
-    setDuration(data.positionMillis);
-    if (data.didJustFinish) {
-      ResetPlayer();
+    if (data.isPlaying) {
+      setDuration(data.positionMillis / 1000);
     } else if (data.positionMillis) {
       if (data.durationMillis) {
         // SetValue((data.positionMillis / data.durationMillis) * 100);
@@ -41,7 +40,7 @@ export const Play = async (val, setDuration) => {
   }
   sound.setOnPlaybackStatusUpdate(() => UpdateStatus(setDuration));
   await sound.playAsync();
-  setDuration(await sound.getStatusAsync());
+  store.dispatch(SetCurrent(await sound.getStatusAsync()));
   store.dispatch(SetCurrent(val));
 };
 
