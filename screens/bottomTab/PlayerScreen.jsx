@@ -11,8 +11,7 @@ import store from "../../store";
 
 export default function PlayerScreen({ route }) {
   const [play, setPlay] = useState(false);
-  const [loaded, setLoaded] = useState();
-  const [Duration, SetDuration] = useState(0);
+  const [duration, SetDuration] = useState(0);
   const [Value, SetValue] = useState(0);
   const { goBack } = useNavigation();
   const currentItem = store.getState().current;
@@ -21,58 +20,33 @@ export default function PlayerScreen({ route }) {
   const { item } = route.params;
 
   useEffect(() => {
-    // console.log(item);
-    // console.log(currentItem);
-    // console.log(musicInfo);
     if (item == currentItem && musicInfo.isPlaying == true) {
       setPlay(true);
-    } else if (musicInfo.isLoaded == true) {
-      setLoaded(true);
     }
   }, []);
+
+  console.log(duration);
 
   const HandleAudio = () => {
     setPlay(!play);
     if (item != currentItem && musicInfo.isLoaded == true) {
       if (musicInfo.isPlaying == true && play == true) {
-        console.log(0);
         setPlay(false);
         Pause(item);
       } else if (play == false) {
-        console.log(1);
         setPlay(true);
         Start(item);
       } else if (play == true) {
         Pause(item);
       }
-      console.log("here");
     } else {
-      console.log(2);
       if (play == false) {
-        console.log(3);
-        Play(item);
+        Play(item, SetDuration);
       } else if (play == true) {
-        console.log(4);
         Pause(item);
       }
     }
   };
-
-  // const HandlePlay = async (item) => {
-  //   if (item != currentItem) {
-  //     setPlay(true);
-  //     dispatch(SetInfo(await Start(item)));
-  //     dispatch(SetCurrent(item));
-  //   }
-  //   if (play == true) {
-  //     setPlay(false);
-  //     dispatch(SetInfo(await Pause()));
-  //   } else if (play == false) {
-  //     setPlay(true);
-  //     dispatch(SetInfo(await Play(item)));
-  //     dispatch(SetCurrent(item));
-  //   }
-  // };
 
   return (
     <View style={styles.container}>
@@ -117,7 +91,7 @@ export default function PlayerScreen({ route }) {
             style={styles.slider}
             minimumValue={0}
             maximumValue={100}
-            value={0}
+            value={duration}
             onSlidingComplete={(data) => SeekUpdate(data)}
             minimumTrackTintColor={"dodgerblue"}
           />
