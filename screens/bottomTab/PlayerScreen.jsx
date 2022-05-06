@@ -90,7 +90,7 @@ export default function PlayerScreen({ route }) {
 
       <View style={styles.footer}>
         <View style={styles.sliderContainer}>
-          <Text style={styles.sliderText}>00:00</Text>
+          <Text style={styles.sliderText}>{ConvertTime(duration / 60)}</Text>
           <Slider
             style={styles.slider}
             minimumValue={0}
