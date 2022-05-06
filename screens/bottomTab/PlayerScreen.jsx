@@ -8,23 +8,26 @@ import MarqueeText from "react-native-marquee";
 import ConvertTime from "../../utility/ConvertTime";
 import { Pause, Play, Start } from "../../utility/AudioController";
 import store from "../../store";
+import { OffScreen, OnScreen } from "../../store/actions/SetOnScreen";
 
 export default function PlayerScreen({ route }) {
   const [play, setPlay] = useState(false);
   const [duration, SetDuration] = useState(0);
-  const [onScreen, setOnscreen] = useState(true);
   const [Value, SetValue] = useState(0);
   const { goBack } = useNavigation();
   const currentItem = store.getState().current;
   const musicInfo = store.getState().info;
+  const screen = store.getState().screen;
   const { item } = route.params;
 
   const HandleGoBack = () => {
-    setOnscreen(false);
+    store.dispatch(OffScreen());
     goBack();
   };
 
   useEffect(() => {
+    store.dispatch(OnScreen());
+    console.log(store.getState().screen);
     if (item == currentItem && musicInfo.isPlaying == true) {
       setPlay(true);
     }
@@ -40,6 +43,7 @@ export default function PlayerScreen({ route }) {
   const HandleAudio = () => {
     setPlay(!play);
     if (item != currentItem && musicInfo.isLoaded == true) {
+      //check if a music was being played
       if (musicInfo.isPlaying == true && play == true) {
         setPlay(false);
         Pause(item);
@@ -51,7 +55,7 @@ export default function PlayerScreen({ route }) {
       }
     } else {
       if (play == false) {
-        Play(item, SetDuration, onScreen);
+        Play(item, SetDuration);
       } else if (play == true) {
         Pause(item);
       }
@@ -64,7 +68,7 @@ export default function PlayerScreen({ route }) {
         <TouchableOpacity
           activeOpacity={0.8}
           onPress={() => {
-            goBack();
+            HandleGoBack();
           }}
         >
           <Entypo name="chevron-down" size={20} color="#808080" />
