@@ -1,12 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  Text,
-  View,
-  TouchableOpacity,
-  Image,
-  BackHandler,
-  Alert,
-} from "react-native";
+import { Text, View, TouchableOpacity, Image, BackHandler } from "react-native";
 import { Entypo, AntDesign } from "@expo/vector-icons";
 import { ScaledSheet } from "react-native-size-matters";
 import Slider from "@react-native-community/slider";
@@ -71,13 +64,13 @@ export default function PlayerScreen({ route }) {
       } else if (play == false) {
         SetPlaying(true);
         setPlay(true);
-        Start(item, SetValue, play);
+        Start(item, SetValue, play, setPlay);
       } else if (play == true) {
         Pause(item);
       }
     } else {
       if (play == false) {
-        Play(item, SetValue, play);
+        Play(item, SetValue, play, setPlay);
       } else if (play == true) {
         Pause(item);
       }

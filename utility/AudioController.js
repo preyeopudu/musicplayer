@@ -6,9 +6,13 @@ import { SetInfo } from "../store/actions/SetInfo";
 import { OnScreen } from "../store/actions/SetOnScreen";
 const currentItem = store.getState().current;
 
-const UpdateStatus = async (SetValue, val, play) => {
+const UpdateStatus = async (SetValue, val, play, setPlay) => {
   try {
     let data = await sound.getStatusAsync();
+    console.log(data);
+    if (data.positionMillis == data.durationMillis) {
+      setPlay(false);
+    }
     if (store.getState().screen == true) {
       if (
         val == store.getState().current &&
@@ -38,30 +42,25 @@ const ResetPlayer = async () => {
   }
 };
 
-export const Play = async (val, SetValue) => {
+export const Play = async (val, SetValue, play, setPlay) => {
   let status = await sound.getStatusAsync();
+
   if (status.isLoaded == false) {
     await sound.loadAsync({ uri: val.uri });
   }
   await sound.playAsync();
   store.dispatch(SetInfo(await sound.getStatusAsync()));
   store.dispatch(SetCurrent(val));
-  LoadAudio(val, SetValue);
+  LoadAudio(val, SetValue, play, setPlay);
 };
 
-export const GetStatus = async () => {
-  const status = await sound.getStatusAsync();
-  console.log(status);
-  return status;
-};
-
-export const Start = async (val, SetValue) => {
+export const Start = async (val, SetValue, play, setPlay) => {
   await sound.unloadAsync();
   await sound.loadAsync({ uri: val.uri });
   await sound.playAsync();
   store.dispatch(SetInfo(await sound.getStatusAsync()));
   store.dispatch(SetCurrent(val));
-  LoadAudio(val, SetValue);
+  LoadAudio(val, SetValue, setPlay);
 };
 
 export const Pause = async (val) => {
@@ -90,9 +89,11 @@ export const SeekUpdate = async (data, duration) => {
   }
 };
 
-export const LoadAudio = async (val, SetValue) => {
+export const LoadAudio = async (val, SetValue, play, setPlay) => {
   const status = await sound.getStatusAsync();
   if (status.isLoaded !== false && store.getState().screen == true) {
-    sound.setOnPlaybackStatusUpdate(() => UpdateStatus(SetValue, val));
+    sound.setOnPlaybackStatusUpdate(() =>
+      UpdateStatus(SetValue, val, play, setPlay)
+    );
   }
 };
