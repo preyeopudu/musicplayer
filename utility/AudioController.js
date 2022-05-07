@@ -3,8 +3,6 @@ const sound = new Audio.Sound();
 import store from "../store";
 import { SetCurrent } from "../store/actions/SetCurrent";
 import { SetInfo } from "../store/actions/SetInfo";
-import { OnScreen } from "../store/actions/SetOnScreen";
-const currentItem = store.getState().current;
 
 const UpdateStatus = async (SetValue, val, play, setPlay) => {
   try {
@@ -23,20 +21,6 @@ const UpdateStatus = async (SetValue, val, play, setPlay) => {
       } else if (val != store.getState().current && play == false) {
         SetValue((data.positionMillis / data.durationMillis) * 100);
       }
-    }
-  } catch (error) {
-    console.log(error);
-  }
-};
-
-const ResetPlayer = async () => {
-  try {
-    const checkLoading = await sound.getStatusAsync();
-    if (checkLoading.isLoaded === true) {
-      SetValue(0);
-      SetPlaying(false);
-      await sound.setPositionAsync(0);
-      await sound.stopAsync();
     }
   } catch (error) {
     console.log(error);
@@ -69,13 +53,6 @@ export const Pause = async (val) => {
   store.dispatch(SetInfo(await sound.getStatusAsync()));
   store.dispatch(SetCurrent(val));
 };
-
-// const Update=()=>{
-//   const status = await sound.getStatusAsync()
-//   if(status.isLoaded==true){
-
-//   }
-// }
 
 export const SeekUpdate = async (data, duration) => {
   try {
