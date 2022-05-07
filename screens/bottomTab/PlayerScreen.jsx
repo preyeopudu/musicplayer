@@ -13,7 +13,13 @@ import Slider from "@react-native-community/slider";
 import { useNavigation } from "@react-navigation/native";
 import MarqueeText from "react-native-marquee";
 import ConvertTime from "../../utility/ConvertTime";
-import { Pause, Play, SeekUpdate, Start } from "../../utility/AudioController";
+import {
+  LoadAudio,
+  Pause,
+  Play,
+  SeekUpdate,
+  Start,
+} from "../../utility/AudioController";
 import store from "../../store";
 import { OffScreen, OnScreen } from "../../store/actions/SetOnScreen";
 import { SetPlaying } from "../../store/actions/SetPlaying";
@@ -64,17 +70,18 @@ export default function PlayerScreen({ route }) {
       } else if (play == false) {
         SetPlaying(true);
         setPlay(true);
-        Start(item, SetDuration, play);
+        Start(item, SetValue, play);
       } else if (play == true) {
         Pause(item);
       }
     } else {
       if (play == false) {
-        Play(item, SetDuration, play);
+        Play(item, SetValue, play);
       } else if (play == true) {
         Pause(item);
       }
     }
+    LoadAudio();
   };
 
   return (
@@ -115,13 +122,13 @@ export default function PlayerScreen({ route }) {
 
       <View style={styles.footer}>
         <View style={styles.sliderContainer}>
-          <Text style={styles.sliderText}>{ConvertTime(duration / 60)}</Text>
+          <Text style={styles.sliderText}>{ConvertTime(Value / 60)}</Text>
           <Slider
             style={styles.slider}
             minimumValue={0}
             maximumValue={100}
-            value={progress}
-            onSlidingComplete={(data) => SeekUpdate(data, SetDuration)}
+            value={Value}
+            onSlidingComplete={(data) => SeekUpdate(data, duration)}
             minimumTrackTintColor={"dodgerblue"}
           />
           <Text style={styles.sliderText}>
