@@ -11,6 +11,7 @@ const UpdateStatus = async (SetValue, val, play, setPlay) => {
     let data = await sound.getStatusAsync();
     console.log(data);
     if (data.positionMillis == data.durationMillis) {
+      await sound.stopAsync();
       setPlay(false);
     }
     if (store.getState().screen == true) {
