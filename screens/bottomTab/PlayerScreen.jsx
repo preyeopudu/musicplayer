@@ -13,7 +13,7 @@ import Slider from "@react-native-community/slider";
 import { useNavigation } from "@react-navigation/native";
 import MarqueeText from "react-native-marquee";
 import ConvertTime from "../../utility/ConvertTime";
-import { Pause, Play, Start } from "../../utility/AudioController";
+import { Pause, Play, SeekUpdate, Start } from "../../utility/AudioController";
 import store from "../../store";
 import { OffScreen, OnScreen } from "../../store/actions/SetOnScreen";
 import { SetPlaying } from "../../store/actions/SetPlaying";
@@ -25,7 +25,6 @@ export default function PlayerScreen({ route }) {
   const { goBack } = useNavigation();
   const currentItem = store.getState().current;
   const musicInfo = store.getState().info;
-  const screen = store.getState().screen;
   const { item } = route.params;
 
   BackHandler.addEventListener("hardwareBackPress", () => {
@@ -65,13 +64,13 @@ export default function PlayerScreen({ route }) {
       } else if (play == false) {
         SetPlaying(true);
         setPlay(true);
-        Start(item, SetDuration);
+        Start(item, SetDuration, play);
       } else if (play == true) {
         Pause(item);
       }
     } else {
       if (play == false) {
-        Play(item, SetDuration);
+        Play(item, SetDuration, play);
       } else if (play == true) {
         Pause(item);
       }
@@ -122,7 +121,7 @@ export default function PlayerScreen({ route }) {
             minimumValue={0}
             maximumValue={100}
             value={progress}
-            onSlidingComplete={(data) => {}}
+            onSlidingComplete={(data) => SeekUpdate(data, SetDuration)}
             minimumTrackTintColor={"dodgerblue"}
           />
           <Text style={styles.sliderText}>
