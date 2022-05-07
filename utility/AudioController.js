@@ -5,24 +5,16 @@ import { SetCurrent } from "../store/actions/SetCurrent";
 import { SetInfo } from "../store/actions/SetInfo";
 const currentItem = store.getState().current;
 
-const UpdateStatus = async (setDuration, val) => {
+const UpdateStatus = async (setDuration, val, play) => {
   try {
-    // console.log(store.getState().screen);
-    // console.log(store.getState().playing);
-
     let data = await sound.getStatusAsync();
-    console.log(store.getState().playing);
-
     if (store.getState().screen == true) {
       if (
         val == store.getState().current &&
         store.getState().info.isPlaying == true
       ) {
         setDuration(data.positionMillis / 1000);
-      } else if (
-        val != store.getState().current &&
-        store.getState().playing == false
-      ) {
+      } else if (val != store.getState().current && play == false) {
         setDuration(data.positionMillis / 1000);
       }
     }
@@ -45,13 +37,13 @@ const ResetPlayer = async () => {
   }
 };
 
-export const Play = async (val, setDuration) => {
+export const Play = async (val, setDuration, play) => {
   let status = await sound.getStatusAsync();
   if (status.isLoaded == false) {
     await sound.loadAsync({ uri: val.uri });
   }
   console.log("here");
-  sound.setOnPlaybackStatusUpdate(() => UpdateStatus(setDuration, val));
+  sound.setOnPlaybackStatusUpdate(() => UpdateStatus(setDuration, val, play));
   await sound.playAsync();
   store.dispatch(SetInfo(await sound.getStatusAsync()));
   store.dispatch(SetCurrent(val));
@@ -66,7 +58,7 @@ export const GetStatus = async () => {
 export const Start = async (val, setDuration) => {
   await sound.unloadAsync();
   await sound.loadAsync({ uri: val.uri });
-  sound.setOnPlaybackStatusUpdate(() => UpdateStatus(setDuration, val));
+  sound.setOnPlaybackStatusUpdate(() => UpdateStatus(setDuration, val, play));
   await sound.playAsync();
   store.dispatch(SetInfo(await sound.getStatusAsync()));
   store.dispatch(SetCurrent(val));
@@ -78,11 +70,13 @@ export const Pause = async (val) => {
   store.dispatch(SetCurrent(val));
 };
 
-export const SeekUpdate = async (data) => {
+export const SeekUpdate = async (data, setDuration, duration) => {
   try {
     const checkLoading = await sound.getStatusAsync();
     if (checkLoading.isLoaded === true) {
-      const result = (data / 100) * Duration;
+      const result = (data / 100) * duration;
+      console.log(data);
+      setDuration(result);
       await sound.setPositionAsync(Math.round(result));
     }
   } catch (error) {
