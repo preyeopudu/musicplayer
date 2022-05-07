@@ -84,8 +84,6 @@ export const SeekUpdate = async (data, duration) => {
       const result = (data / 100) * status.durationMillis;
       await sound.setPositionAsync(result);
       console.log(result);
-      //SetValue(result);
-      // await sound.setPositionAsync(Math.round(result));
     }
   } catch (error) {
     console.log(error);
@@ -94,7 +92,6 @@ export const SeekUpdate = async (data, duration) => {
 
 export const LoadAudio = async (val, SetValue) => {
   const status = await sound.getStatusAsync();
-  console.log(status);
   if (status.isLoaded !== false && store.getState().screen == true) {
     sound.setOnPlaybackStatusUpdate(() => UpdateStatus(SetValue, val));
   }

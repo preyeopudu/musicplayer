@@ -3,7 +3,6 @@ import { FlatList, Text, View, Image, TouchableOpacity } from "react-native";
 import { ScaledSheet } from "react-native-size-matters";
 import { useSelector } from "react-redux";
 import ConvertTime from "../../utility/ConvertTime";
-import { Audio } from "expo-av";
 import { Entypo } from "@expo/vector-icons";
 import BottomModal from "../../components/BottomModal";
 import { useNavigation } from "@react-navigation/native";

@@ -32,7 +32,8 @@ export default function PlayerScreen({ route }) {
   const currentItem = store.getState().current;
   const musicInfo = store.getState().info;
   const { item } = route.params;
-
+  console.log(Value);
+  console.log(duration);
   BackHandler.addEventListener("hardwareBackPress", () => {
     store.dispatch(OffScreen());
   });
@@ -122,7 +123,9 @@ export default function PlayerScreen({ route }) {
 
       <View style={styles.footer}>
         <View style={styles.sliderContainer}>
-          <Text style={styles.sliderText}>{ConvertTime(Value / 60)}</Text>
+          <Text style={styles.sliderText}>
+            {ConvertTime((Value * route.params.item.duration) / 6000)}
+          </Text>
           <Slider
             style={styles.slider}
             minimumValue={0}
