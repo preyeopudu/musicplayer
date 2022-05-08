@@ -25,8 +25,6 @@ export default function PlayerScreen({ route }) {
   const currentItem = store.getState().current;
   const musicInfo = store.getState().info;
   const { item } = route.params;
-  console.log(Value);
-  console.log(duration);
   BackHandler.addEventListener("hardwareBackPress", () => {
     store.dispatch(OffScreen());
   });
@@ -48,9 +46,6 @@ export default function PlayerScreen({ route }) {
   if (isNaN(progress)) {
     progress = 0;
   }
-
-  // console.log(duration);
-  // console.log(duration / 1000);
 
   const HandleAudio = () => {
     SetPlaying(!play);
@@ -124,8 +119,9 @@ export default function PlayerScreen({ route }) {
             minimumValue={0}
             maximumValue={100}
             value={Value}
-            onSlidingComplete={(data) => SeekUpdate(data, duration)}
+            onValueChange={(data) => SeekUpdate(data, duration)}
             minimumTrackTintColor={"dodgerblue"}
+            step={1}
           />
           <Text style={styles.sliderText}>
             {ConvertTime(route.params.item.duration / 60)}
