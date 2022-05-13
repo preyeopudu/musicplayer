@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState, useContext, useRef } from "react";
 import { Text, View, TouchableOpacity, Image, BackHandler } from "react-native";
 import { Entypo, AntDesign } from "@expo/vector-icons";
 import { ScaledSheet } from "react-native-size-matters";
@@ -6,47 +6,61 @@ import Slider from "@react-native-community/slider";
 import { useNavigation } from "@react-navigation/native";
 import MarqueeText from "react-native-marquee";
 import ConvertTime from "../../utility/ConvertTime";
-import {
-  LoadAudio,
-  Pause,
-  Play,
-  SeekUpdate,
-  Start,
-} from "../../utility/AudioController";
 import store from "../../store";
-import { OffScreen, OnScreen } from "../../store/actions/SetOnScreen";
+import { OnScreen } from "../../store/actions/SetOnScreen";
 import { SetPlaying } from "../../store/actions/SetPlaying";
 import { useSelector } from "react-redux";
 import { PlayerContext } from "../../hooks/PlayerReducer";
 import { playerScreenStyles as styles } from "../styles/playerScreen";
+import { Audio } from "expo-av";
 
 export default function PlayerScreen({ route }) {
-  const data = useSelector((s) => s);
-  // const { info, music, current } = data;
+  const { item } = route.params;
+  const { music, setMusic } = useContext(PlayerContext);
   const [play, setPlay] = useState(false);
   const [duration, SetDuration] = useState(0);
   const [Value, SetValue] = useState(0);
   const { goBack } = useNavigation();
   const currentItem = store.getState().current;
-  // const { durationMillis, positionMillis } = info;
-  const { item } = route.params;
+  const sound = useRef(new Audio.Sound());
 
-  const { music, setMusic } = useContext(PlayerContext);
-  console.log(music.positionMillis);
+  const UpdateStatus = async () => {
+    try {
+      let status = await sound.current.getStatusAsync();
+      console.log(status);
+      setMusic(status);
+      if (status.positionMillis == status.durationMillis) {
+        await sound.stopAsync().info;
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const Play = async () => {
+    let status = await sound.current.getStatusAsync();
+    if (status.isLoaded == false) {
+      await sound.current.loadAsync({ uri: item.uri });
+    }
+    await sound.current.playAsync();
+    if ((await sound.current.getStatusAsync().isLoaded) !== false) {
+      console.log(2);
+      sound.current.setOnPlaybackStatusUpdate(() => UpdateStatus());
+    }
+  };
+
+  let progress = (music.positionMillis / music.durationMillis) * 100;
+  if (isNaN(progress)) {
+    progress = 0;
+  }
 
   useEffect(() => {
     store.dispatch(SetPlaying(false));
     store.dispatch(OnScreen());
     if (item == currentItem && musicInfo.isPlaying == true) {
-      //checks if on new screen and a song is playing
       setPlay(true);
     }
   }, []);
-
-  let progress = 0;
-  if (isNaN(progress)) {
-    progress = 0;
-  }
 
   return (
     <View style={styles.container}>
@@ -54,7 +68,7 @@ export default function PlayerScreen({ route }) {
         <TouchableOpacity
           activeOpacity={0.8}
           onPress={() => {
-            HandleGoBack();
+            goBack();
           }}
         >
           <Entypo name="chevron-down" size={20} color="#808080" />
@@ -122,7 +136,7 @@ export default function PlayerScreen({ route }) {
             <TouchableOpacity
               style={[styles.button, { width: 45, height: 45 }]}
               onPress={() => {
-                Play(item, setMusic);
+                Play();
               }}
             >
               <AntDesign name="caretright" size={24} color="#808080" />
