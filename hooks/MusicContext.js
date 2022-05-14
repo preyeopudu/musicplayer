@@ -3,6 +3,8 @@ import { createContext, useState } from "react";
 
 export const MusicContext = createContext();
 export const MusicUpdateContext = createContext();
+export const MusicFilesContext = createContext();
+export const SetMusicFilesContext = createContext();
 
 export const useMusic = () => {
   return useContext(MusicContext);
@@ -14,15 +16,24 @@ export const useMusicUpate = () => {
 
 export const MusicProvider = ({ children }) => {
   const [music, setMusic] = useState({});
+  const [musicFiles, setMusicFiles] = useState();
 
   const HandleSetMusic = (data) => {
     setMusic(data);
   };
+
+  const HandleSetFiles = (data) => {
+    setMucicFiles(data);
+  };
   return (
-    <MusicContext.Provider value={music}>
-      <MusicUpdateContext.Provider value={HandleSetMusic}>
-        {children}
-      </MusicUpdateContext.Provider>
-    </MusicContext.Provider>
+    <SetMusicFilesContext.Provider value={setMusicFiles}>
+      <MusicFilesContext.Provider value={musicFiles}>
+        <MusicContext.Provider value={music}>
+          <MusicUpdateContext.Provider value={HandleSetMusic}>
+            {children}
+          </MusicUpdateContext.Provider>
+        </MusicContext.Provider>
+      </MusicFilesContext.Provider>
+    </SetMusicFilesContext.Provider>
   );
 };
