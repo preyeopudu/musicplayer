@@ -1,15 +1,15 @@
 import React, { useEffect, useState, useContext, useRef } from "react";
 import { Text, View, TouchableOpacity, Image, BackHandler } from "react-native";
 import { Entypo, AntDesign } from "@expo/vector-icons";
-import { ScaledSheet } from "react-native-size-matters";
 import Slider from "@react-native-community/slider";
 import { useNavigation } from "@react-navigation/native";
 import MarqueeText from "react-native-marquee";
 import ConvertTime from "../../utility/ConvertTime";
 import store from "../../store";
+import { SetCurrent } from "../../store/actions/SetCurrent";
 import { OnScreen } from "../../store/actions/SetOnScreen";
 import { SetPlaying } from "../../store/actions/SetPlaying";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { useMusic, useMusicUpate } from "../../hooks/MusicContext";
 import { playerScreenStyles as styles } from "../styles/playerScreen";
 import { Audio } from "expo-av";
@@ -17,14 +17,15 @@ import { Audio } from "expo-av";
 export default function PlayerScreen({ route }) {
   const { item } = route.params;
   const [play, setPlay] = useState(false);
-  const [duration, SetDuration] = useState(0);
   const [Value, SetValue] = useState(0);
+  const [onCurrent, SetOncurrent] = useState(false);
+  const [isPlaying, SetIsPlaying] = useState(false);
   const { goBack } = useNavigation();
   const currentItem = store.getState().current;
+  const dispatch = useDispatch();
   const sound = useRef(new Audio.Sound());
   const music = useMusic();
   const setMusic = useMusicUpate();
-  var value = 0;
 
   const Play = async () => {
     let status = await sound.current.getStatusAsync();
@@ -32,11 +33,11 @@ export default function PlayerScreen({ route }) {
       await sound.current.loadAsync({ uri: item.uri });
     }
     await sound.current.playAsync();
+    dispatch(SetCurrent(item));
     setPlay(true);
   };
 
   useEffect(() => {
-    console.log(1);
     const UpdateStatus = async () => {
       try {
         let status = await sound.current.getStatusAsync();
@@ -49,7 +50,6 @@ export default function PlayerScreen({ route }) {
       }
     };
     const update = async () => {
-      console.log(2);
       if ((await sound.current.getStatusAsync().isLoaded) !== false) {
         sound.current.setOnPlaybackStatusUpdate(() => UpdateStatus());
       }
@@ -60,16 +60,17 @@ export default function PlayerScreen({ route }) {
   }, [play]);
 
   useEffect(() => {
-    const update = async () => {
-      console.log(2);
-      if ((await sound.current.getStatusAsync().isLoaded) == false) {
+    console.log(music);
+    if (item == currentItem) {
+      SetOncurrent(true);
+      if (music.isPlaying) {
       }
-    };
+    }
   }, [play]);
 
-  console.log(music);
-  let progress = music.positionMillis / music.durationMillis;
-  if (isNaN(progress)) {
+  let progress = (music.positionMillis / music.durationMillis) * 100;
+
+  if (currentItem != item || isNaN(progress)) {
     progress = 0;
   }
 
@@ -118,7 +119,7 @@ export default function PlayerScreen({ route }) {
             style={styles.slider}
             minimumValue={0}
             maximumValue={100}
-            value={duration}
+            value={progress}
             onSlidingStart={() => {
               Pause();
               console.log(1);
