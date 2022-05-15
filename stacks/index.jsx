@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { Alert } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import BottomTabs from "./BottomTab";
 import * as MediaLibrary from "expo-media-library";
@@ -13,7 +12,7 @@ const IndexStack = () => {
   const [status, requestPermission] = MediaLibrary.usePermissions();
   const getPermission = async () => {
     const permission = await requestPermission();
-    // console.log(permission);
+    console.log(permission);
 
     if (permission.granted) {
       // we want to get all the audio files

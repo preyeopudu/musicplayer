@@ -10,7 +10,7 @@ import { SetCurrent } from "../../store/actions/SetCurrent";
 import { OnScreen } from "../../store/actions/SetOnScreen";
 import { SetPlaying } from "../../store/actions/SetPlaying";
 import { useSelector, useDispatch } from "react-redux";
-import { useMusic, useMusicUpate } from "../../hooks/MusicContext";
+import { useMusic, useMusicUpate, useSound } from "../../hooks/MusicContext";
 import { playerScreenStyles as styles } from "../styles/playerScreen";
 import { Audio } from "expo-av";
 
@@ -23,44 +23,68 @@ export default function PlayerScreen({ route }) {
   const { goBack } = useNavigation();
   const currentItem = store.getState().current;
   const dispatch = useDispatch();
-  const sound = useRef(new Audio.Sound());
+  const sound = useSound();
   const music = useMusic();
   const setMusic = useMusicUpate();
 
   const Play = async () => {
-    let status = await sound.current.getStatusAsync();
-    if (status.isLoaded == false) {
-      await sound.current.loadAsync({ uri: item.uri });
+    let status = await sound.getStatusAsync();
+    if (item != currentItem) {
+      await sound.unloadAsync();
+      await sound.loadAsync({ uri: item.uri });
     }
-    await sound.current.playAsync();
     dispatch(SetCurrent(item));
     setPlay(true);
+    await sound.playAsync();
   };
 
-  useEffect(() => {
-    const UpdateStatus = async () => {
-      try {
-        let status = await sound.current.getStatusAsync();
-        setMusic(status);
-        if (status.positionMillis == status.durationMillis) {
-          await sound.current.stopAsync();
+  // const Start = async () => {
+  //   sound.unloadAsync(() => console.log("unloading"));
+  //   await sound.loadAsync({ uri: item.uri });
+  //   const status = await sound.getStatusAsync();
+  //   console.log(status);
+  //   if (status.isLoaded == true) {
+  //     await sound.playAsync();
+  //   }
+  //   dispatch(SetCurrent(item));
+  // };
+
+  const Pause = async () => {
+    try {
+      const status = await sound.getStatusAsync();
+      if (status.isLoaded) {
+        if (status.isPlaying === true) {
+          sound.pauseAsync();
+          setPlay(false);
         }
-      } catch (error) {
-        console.log(error);
       }
-    };
-    const update = async () => {
-      if ((await sound.current.getStatusAsync().isLoaded) !== false) {
-        sound.current.setOnPlaybackStatusUpdate(() => UpdateStatus());
-      }
-    };
-    if (play == true) {
-      update().catch(console.error);
+    } catch (error) {
+      setPlay(true);
     }
+  };
+  useEffect(() => {
+    // const UpdateStatus = async () => {
+    //   try {
+    //     let status = await sound.current.getStatusAsync();
+    //     setMusic(status);
+    //     if (status.positionMillis == status.durationMillis) {
+    //       await sound.current.stopAsync();
+    //     }
+    //   } catch (error) {
+    //     console.log(error);
+    //   }
+    // };
+    // const update = async () => {
+    //   if ((await sound.current.getStatusAsync().isLoaded) !== false) {
+    //     sound.current.setOnPlaybackStatusUpdate(() => UpdateStatus());
+    //   }
+    // };
+    // if (play == true) {
+    //   update().catch(console.error);
+    // }
   }, [play]);
 
   useEffect(() => {
-    console.log(music);
     if (item == currentItem) {
       SetOncurrent(true);
       if (music.isPlaying) {
@@ -138,14 +162,21 @@ export default function PlayerScreen({ route }) {
             <AntDesign name="stepbackward" size={15} color="#808080" />
           </View>
 
-          <TouchableOpacity
-            style={[styles.button, { width: 45, height: 45 }]}
-            onPress={() => {
-              Play();
-            }}
-          >
-            <AntDesign name="caretright" size={24} color="#808080" />
-          </TouchableOpacity>
+          {play == false ? (
+            <TouchableOpacity
+              style={[styles.button, { width: 45, height: 45 }]}
+              onPress={Play}
+            >
+              <AntDesign name="caretright" size={24} color="#808080" />
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity
+              style={[styles.button, { width: 45, height: 45 }]}
+              onPress={Pause}
+            >
+              <AntDesign name="pause" size={24} color="#808080" />
+            </TouchableOpacity>
+          )}
 
           <View style={[styles.button]}>
             <AntDesign name="stepforward" size={15} color="#808080" />
