@@ -27,76 +27,41 @@ export default function PlayerScreen({ route }) {
   const music = useMusic();
   const setMusic = useMusicUpate();
 
-  const Play = async () => {
-    let status = await sound.getStatusAsync();
-    if (item != currentItem) {
-      await sound.unloadAsync();
-      await sound.loadAsync({ uri: item.uri });
-    }
-    dispatch(SetCurrent(item));
-    setPlay(true);
-    await sound.playAsync();
-  };
-
-  // const Start = async () => {
-  //   sound.unloadAsync(() => console.log("unloading"));
-  //   await sound.loadAsync({ uri: item.uri });
-  //   const status = await sound.getStatusAsync();
-  //   console.log(status);
-  //   if (status.isLoaded == true) {
-  //     await sound.playAsync();
-  //   }
-  //   dispatch(SetCurrent(item));
-  // };
-
-  const Pause = async () => {
+  const UpdateStatus = async () => {
     try {
-      const status = await sound.getStatusAsync();
-      if (status.isLoaded) {
-        if (status.isPlaying === true) {
-          sound.pauseAsync();
-          setPlay(false);
-        }
+      let status = await sound.getStatusAsync();
+      setMusic(status);
+      if (status.positionMillis == status.durationMillis) {
+        await sound.stopAsync();
       }
     } catch (error) {
-      setPlay(true);
+      console.log(error);
     }
   };
-  useEffect(() => {
-    // const UpdateStatus = async () => {
-    //   try {
-    //     let status = await sound.current.getStatusAsync();
-    //     setMusic(status);
-    //     if (status.positionMillis == status.durationMillis) {
-    //       await sound.current.stopAsync();
-    //     }
-    //   } catch (error) {
-    //     console.log(error);
-    //   }
-    // };
-    // const update = async () => {
-    //   if ((await sound.current.getStatusAsync().isLoaded) !== false) {
-    //     sound.current.setOnPlaybackStatusUpdate(() => UpdateStatus());
-    //   }
-    // };
-    // if (play == true) {
-    //   update().catch(console.error);
-    // }
-  }, [play]);
-
-  useEffect(() => {
-    if (item == currentItem) {
-      SetOncurrent(true);
-      if (music.isPlaying) {
-      }
+  const update = async () => {
+    if ((await sound.getStatusAsync().isLoaded) !== false) {
+      sound.setOnPlaybackStatusUpdate(() => UpdateStatus());
     }
-  }, [play]);
+  };
 
-  let progress = (music.positionMillis / music.durationMillis) * 100;
-
-  if (currentItem != item || isNaN(progress)) {
-    progress = 0;
-  }
+  const HandlePlayPause = async () => {
+    let status = await sound.getStatusAsync();
+    setPlay(!play);
+    if (play == false) {
+      if (status.isLoaded == false) {
+        await sound.loadAsync({ uri: item.uri });
+      }
+      if (item != currentItem && status.isLoaded == true) {
+        sound.unloadAsync();
+        sound.loadAsync({ uri: item.uri });
+      }
+      await sound.playAsync();
+      update();
+      dispatch(SetCurrent(item));
+    } else if (play == true) {
+      await sound.pauseAsync();
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -162,21 +127,16 @@ export default function PlayerScreen({ route }) {
             <AntDesign name="stepbackward" size={15} color="#808080" />
           </View>
 
-          {play == false ? (
-            <TouchableOpacity
-              style={[styles.button, { width: 45, height: 45 }]}
-              onPress={Play}
-            >
-              <AntDesign name="caretright" size={24} color="#808080" />
-            </TouchableOpacity>
-          ) : (
-            <TouchableOpacity
-              style={[styles.button, { width: 45, height: 45 }]}
-              onPress={Pause}
-            >
-              <AntDesign name="pause" size={24} color="#808080" />
-            </TouchableOpacity>
-          )}
+          <TouchableOpacity
+            style={[styles.button, { width: 45, height: 45 }]}
+            onPress={HandlePlayPause}
+          >
+            <AntDesign
+              name={play == true ? "pause" : "caretright"}
+              size={24}
+              color="#808080"
+            />
+          </TouchableOpacity>
 
           <View style={[styles.button]}>
             <AntDesign name="stepforward" size={15} color="#808080" />

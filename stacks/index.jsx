@@ -12,7 +12,6 @@ const IndexStack = () => {
   const [status, requestPermission] = MediaLibrary.usePermissions();
   const getPermission = async () => {
     const permission = await requestPermission();
-    console.log(permission);
 
     if (permission.granted) {
       // we want to get all the audio files
