@@ -29,7 +29,7 @@ export default function PlayerScreen({ route }) {
         await sound.stopAsync();
       }
     } catch (error) {
-      console.log("error occurred");
+      console.log(error);
     }
   };
 
@@ -46,21 +46,17 @@ export default function PlayerScreen({ route }) {
     if (play == false) {
       dispatch(SetCurrent(item));
       if (status.isLoaded == true && currentItem != item) {
-        console.log(1);
+        await sound.pauseAsync();
         await sound.unloadAsync();
-        console.log(2);
         await sound.loadAsync({ uri: item.uri });
-        console.log(3);
         await sound.playAsync();
-        console.log(4);
-        // LoadAudio(); //start music
       } else {
         if (status.isLoaded == false) {
           await sound.loadAsync({ uri: item.uri });
           console.log(5);
         }
         await sound.playAsync();
-        // LoadAudio(); //play music
+        LoadAudio(); //play music
       }
     } else if (play == true) {
       sound.pauseAsync();

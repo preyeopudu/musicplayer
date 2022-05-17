@@ -28,6 +28,8 @@ export const MusicProvider = ({ children }) => {
     setMusic(data);
   };
 
+  const onPlaybackStatusUpdate = () => {};
+
   return (
     <SoundContext.Provider value={sound}>
       <MusicContext.Provider value={music}>
