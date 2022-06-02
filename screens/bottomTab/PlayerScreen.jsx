@@ -5,13 +5,51 @@ import Slider from "@react-native-community/slider";
 import { useNavigation } from "@react-navigation/native";
 import MarqueeText from "react-native-marquee";
 import ConvertTime from "../../utility/ConvertTime";
-import { useMusic, useMusicUpate, useSound } from "../../hooks/MusicContext";
+import { usePlaying } from "../../hooks/AppContext";
+import { useIsplaying, usePlayPause, useSound } from "../../hooks/MusicContext";
 import { playerScreenStyles as styles } from "../styles/playerScreen";
 
 export default function PlayerScreen({ route }) {
   const { item } = route.params;
   const [play, setPlay] = useState(false);
   const { goBack } = useNavigation();
+  const isPlaying = useIsplaying();
+  const music = usePlaying();
+  const sound = useSound();
+  const HandlePlayPause = usePlayPause();
+  let position;
+  try {
+    position = (music.positionMillis / music.durationMillis) * 100;
+  } catch (error) {
+    position = 0;
+  }
+
+  const SeekUpdate = async (data) => {
+    const status = await sound.current.getStatusAsync();
+    if (status.isLoaded == false) {
+      return null;
+    } else {
+      try {
+        const checkLoading = await sound.current.getStatusAsync();
+        if (checkLoading.isLoaded === true) {
+          const result = (data / 100) * music.durationMillis;
+          await sound.current.setPositionAsync(Math.round(result));
+          await sound.current.playAsync();
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  };
+
+  const Pause = async () => {
+    const status = await sound.current.getStatusAsync();
+    if (status.isLoaded == false) {
+      return null;
+    } else {
+      sound.current.pauseAsync();
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -58,12 +96,11 @@ export default function PlayerScreen({ route }) {
             style={styles.slider}
             minimumValue={0}
             maximumValue={100}
-            value={progress}
+            value={position}
             onSlidingStart={() => {
               Pause();
-              console.log(1);
             }}
-            onSlidingComplete={(data) => SeekUpdate(data, duration)}
+            onSlidingComplete={(data) => SeekUpdate(data)}
             minimumTrackTintColor={"dodgerblue"}
             step={1}
           />
@@ -82,7 +119,7 @@ export default function PlayerScreen({ route }) {
             onPress={HandlePlayPause}
           >
             <AntDesign
-              name={play == true ? "pause" : "caretright"}
+              name={isPlaying == true ? "pause" : "caretright"}
               size={24}
               color="#808080"
             />

@@ -56,6 +56,7 @@ const IndexStack = () => {
       first: media.totalCount,
     });
     SetList(media.assets);
+    console.log(media.assets);
   };
 
   useEffect(() => {
