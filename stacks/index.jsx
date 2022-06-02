@@ -3,12 +3,10 @@ import { NavigationContainer } from "@react-navigation/native";
 import BottomTabs from "./BottomTab";
 import * as MediaLibrary from "expo-media-library";
 import * as Linking from "expo-linking";
-import { useDispatch } from "react-redux";
-import { SetMusic } from "../store/actions/GetMusic";
+import { useMusicListUpdate } from "../hooks/AppContext";
 
 const IndexStack = () => {
-  const dispatch = useDispatch();
-  const [audioFiles, setAudioFiles] = useState([]);
+  const SetList = useMusicListUpdate();
   const [status, requestPermission] = MediaLibrary.usePermissions();
   const getPermission = async () => {
     const permission = await requestPermission();
@@ -57,8 +55,7 @@ const IndexStack = () => {
       mediaType: "audio",
       first: media.totalCount,
     });
-
-    dispatch(SetMusic(media.assets));
+    SetList(media.assets);
   };
 
   useEffect(() => {

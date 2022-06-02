@@ -3,16 +3,19 @@ import IndexStack from "./stacks/index";
 import { Provider } from "react-redux";
 import store from "./store/index";
 import { MusicProvider } from "./hooks/MusicContext";
+import { AppProvider } from "./hooks/AppContext";
 
 export default function App() {
   return (
-    <MusicProvider>
-      <Provider store={store}>
-        <View style={styles.container}>
-          <IndexStack />
-        </View>
-      </Provider>
-    </MusicProvider>
+    <AppProvider>
+      <MusicProvider>
+        <Provider store={store}>
+          <View style={styles.container}>
+            <IndexStack />
+          </View>
+        </Provider>
+      </MusicProvider>
+    </AppProvider>
   );
 }
 

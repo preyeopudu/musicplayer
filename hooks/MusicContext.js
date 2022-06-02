@@ -2,6 +2,7 @@ import { useContext } from "react";
 import { createContext, useState } from "react";
 import { Audio } from "expo-av";
 import { Sound } from "expo-av/build/Audio";
+import { AppProvider } from "./AppContext";
 const sound = new Audio.Sound();
 
 export const MusicContext = createContext();
@@ -34,7 +35,7 @@ export const MusicProvider = ({ children }) => {
     <SoundContext.Provider value={sound}>
       <MusicContext.Provider value={music}>
         <MusicUpdateContext.Provider value={HandleSetMusic}>
-          {children}
+          <AppProvider>{children}</AppProvider>
         </MusicUpdateContext.Provider>
       </MusicContext.Provider>
     </SoundContext.Provider>
