@@ -108,7 +108,6 @@ export default function PlayerScreen({ route }) {
             goBack();
           }}
         >
-          <Text>{position}</Text>
           <Entypo name="chevron-down" size={20} color="#808080" />
         </TouchableOpacity>
         <MarqueeText
@@ -143,7 +142,7 @@ export default function PlayerScreen({ route }) {
               ? ConvertTime(music.positionMillis / 60000)
               : ConvertTime(0)}
           </Text>
-          {/* <Slider
+          <Slider
             style={styles.slider}
             minimumValue={0}
             maximumValue={100}
@@ -154,7 +153,7 @@ export default function PlayerScreen({ route }) {
             onSlidingComplete={(data) => SeekUpdate(data)}
             minimumTrackTintColor={"dodgerblue"}
             step={1}
-          /> */}
+          />
           <Text style={styles.sliderText}>
             {ConvertTime(current.duration / 60)}
           </Text>
