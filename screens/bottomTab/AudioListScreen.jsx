@@ -16,7 +16,6 @@ export default function AudioListScreen() {
   const sound = useSound();
 
   const openModal = async (val) => {
-    setCurrentItem(val);
     setVisible(true);
   };
 
@@ -25,7 +24,6 @@ export default function AudioListScreen() {
     if (status.isLoaded == true) {
       await sound.current.unloadAsync();
     }
-    setCurrent(item);
     navigate("player", { item });
   };
 

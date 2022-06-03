@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Text, View, TouchableOpacity, Image } from "react-native";
+import { Text, View, TouchableOpacity, Image, Alert } from "react-native";
 import { Entypo, AntDesign } from "@expo/vector-icons";
 import Slider from "@react-native-community/slider";
 import { useNavigation } from "@react-navigation/native";
@@ -7,6 +7,7 @@ import MarqueeText from "react-native-marquee";
 import ConvertTime from "../../utility/ConvertTime";
 import {
   useCurrent,
+  useCurrentUpdate,
   usePlaying,
   usePlayingUpdate,
 } from "../../hooks/AppContext";
@@ -27,6 +28,7 @@ export default function PlayerScreen({ route }) {
   const current = useCurrent();
   const setIsPlaying = useIsPlayingUpdate();
   const setPlaying = usePlayingUpdate();
+  const setCurrent = useCurrentUpdate();
   let position = 0;
   if (music && music.positionMillis) {
     position = (music.positionMillis / music.durationMillis) * 100;
@@ -71,9 +73,12 @@ export default function PlayerScreen({ route }) {
     if (status.isLoaded == false) {
       await sound.current.loadAsync({ uri: item.uri });
     } else if (status.isLoaded == true) {
-      await sound.current.unloadAsync();
-      await sound.current.loadAsync({ uri: item.uri });
+      if (current != item) {
+        await sound.current.unloadAsync();
+        await sound.current.loadAsync({ uri: item.uri });
+      }
     }
+    setCurrent(item);
     setIsPlaying(true);
     await sound.current.playAsync();
     sound.current.setOnPlaybackStatusUpdate(UpdateStatus);
@@ -88,9 +93,7 @@ export default function PlayerScreen({ route }) {
         if (data.durationMillis) {
         }
       }
-    } catch (error) {
-      console.log(error);
-    }
+    } catch (error) {}
   };
 
   useEffect(() => {
@@ -117,7 +120,7 @@ export default function PlayerScreen({ route }) {
           loop={true}
           delay={1000}
         >
-          {current.filename}
+          {item.filename}
         </MarqueeText>
 
         <TouchableOpacity onPress={() => {}}>
@@ -154,7 +157,7 @@ export default function PlayerScreen({ route }) {
             step={1}
           />
           <Text style={styles.sliderText}>
-            {ConvertTime(current.duration / 60)}
+            {ConvertTime(item.duration / 60)}
           </Text>
         </View>
 
@@ -166,6 +169,7 @@ export default function PlayerScreen({ route }) {
           <TouchableOpacity style={[styles.button, { width: 45, height: 45 }]}>
             <AntDesign
               name={isPlaying == true ? "pause" : "caretright"}
+              onPress={isPlaying == true ? Pause : Play}
               size={24}
               color="#808080"
             />
