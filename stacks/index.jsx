@@ -4,7 +4,6 @@ import BottomTabs from "./BottomTab";
 import * as MediaLibrary from "expo-media-library";
 import * as Linking from "expo-linking";
 import { useMusicListUpdate } from "../hooks/AppContext";
-
 const IndexStack = () => {
   const SetList = useMusicListUpdate();
   const [status, requestPermission] = MediaLibrary.usePermissions();
@@ -56,7 +55,6 @@ const IndexStack = () => {
       first: media.totalCount,
     });
     SetList(media.assets);
-    console.log(media.assets);
   };
 
   useEffect(() => {

@@ -35,6 +35,7 @@ export const AppProvider = ({ children }) => {
 
   const HandleCurrent = (data) => {
     setCurrent(data);
+    console.log(data);
   };
 
   const HandleList = (data) => {
@@ -48,15 +49,15 @@ export const AppProvider = ({ children }) => {
   return (
     <MusicListContext.Provider value={musicList}>
       <MusicListsUpdateContext.Provider value={HandleList}>
-        <CurrentSongContext.Provider value={current}>
-          <CurrentSongUpdateContext.Provider value={HandleCurrent}>
+        <CurrentSongUpdateContext.Provider value={HandleCurrent}>
+          <CurrentSongContext.Provider value={current}>
             <PlayingContext.Provider value={playing}>
               <PlayingUpdateContext.Provider value={HandlePlaying}>
                 {children}
               </PlayingUpdateContext.Provider>
             </PlayingContext.Provider>
-          </CurrentSongUpdateContext.Provider>
-        </CurrentSongContext.Provider>
+          </CurrentSongContext.Provider>
+        </CurrentSongUpdateContext.Provider>
       </MusicListsUpdateContext.Provider>
     </MusicListContext.Provider>
   );

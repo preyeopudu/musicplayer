@@ -9,7 +9,7 @@ import {
 import { Alert } from "react-native";
 const sound = new Audio.Sound();
 
-const Playing = createContext();
+const IsPlaying = createContext();
 const PlayPause = createContext();
 const SoundContext = createContext();
 
@@ -18,7 +18,7 @@ export const usePlayPause = () => {
 };
 
 export const useIsplaying = () => {
-  return useContext(Playing);
+  return useContext(IsPlaying);
 };
 
 export const useSound = () => {
@@ -27,10 +27,8 @@ export const useSound = () => {
 
 export const MusicProvider = ({ children }) => {
   const [isplaying, setIsPlaying] = useState(false);
-  const [Loaded, SetLoaded] = useState(false);
-  const setPlaying = usePlayingUpdate;
-  const setCurrent = useCurrentUpdate();
-  const current = useCurrent();
+  const setPlaying = usePlayingUpdate();
+  const currentSong = useCurrent();
 
   const sound = React.useRef(new Audio.Sound());
 
@@ -48,18 +46,19 @@ export const MusicProvider = ({ children }) => {
     }
   };
 
-  // const Play=async()=>{
-  //     setIsPlaying(true)
-  //     try{
-  //       let status=await sound.current.getStatusAsync()
-  //       if(status.isLoaded==false){
-  //           await sound.current.loadAsync({uri:current.uri})
-  //       }
-
-  //     }catch(error){
-  //       Alert.alert(`${error.message}`)
-  //     }
-  // }
+  const Play = async () => {
+    setIsPlaying(true);
+    try {
+      let status = await sound.current.getStatusAsync();
+      if (status.isLoaded == false) {
+        await sound.current.loadAsync({ uri: current.uri });
+      }
+      if (status.isLoaded == true) {
+      }
+    } catch (error) {
+      Alert.alert(`${error.message}`);
+    }
+  };
 
   const HandlePlayPause = async () => {
     setIsPlaying(!isplaying);
@@ -70,21 +69,16 @@ export const MusicProvider = ({ children }) => {
       }
 
       if (status.isLoaded == false) {
-        await sound.current.loadAsync({ uri: current.uri });
-
+        await sound.current.loadAsync({ uri: currentSong.uri });
         const result = await sound.current.getStatusAsync();
         if (result.isLoaded === true) {
           sound.current.setOnPlaybackStatusUpdate(UpdateStatus);
-          SetLoaded(true);
         }
       } else if (status.isLoaded == true) {
         await sound.current.unloadAsync();
-        await sound.current.loadAsync({ uri: item.secondsClip });
-
-        await sound.current.playAsync();
+        await sound.current.loadAsync({ uri: current.uri });
       }
       await sound.current.playAsync();
-      setCurrent(item);
     } catch (error) {
       setIsPlaying(false);
       Alert.alert("ERROR WHILE LOADING SONG", `${error.message}`);
@@ -93,7 +87,8 @@ export const MusicProvider = ({ children }) => {
 
   const UpdateStatus = async (data) => {
     try {
-      // setPlaying(data);
+      setPlaying(data);
+
       if (data.didJustFinish) {
         setIsPlaying(false);
         ResetPlayer();
@@ -108,11 +103,11 @@ export const MusicProvider = ({ children }) => {
 
   return (
     <SoundContext.Provider value={sound}>
-      <Playing.Provider value={isplaying}>
+      <IsPlaying.Provider value={isplaying}>
         <PlayPause.Provider value={HandlePlayPause}>
-          <AppProvider>{children}</AppProvider>
+          {children}
         </PlayPause.Provider>
-      </Playing.Provider>
+      </IsPlaying.Provider>
     </SoundContext.Provider>
   );
 };

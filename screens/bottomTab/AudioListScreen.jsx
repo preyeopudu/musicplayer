@@ -5,20 +5,30 @@ import ConvertTime from "../../utility/ConvertTime";
 import { Entypo } from "@expo/vector-icons";
 import BottomModal from "../../components/BottomModal";
 import { useNavigation } from "@react-navigation/native";
-import { useCurrentUpdate, useMusicList } from "../../hooks/AppContext";
+import {
+  useCurrent,
+  useCurrentUpdate,
+  useMusicList,
+} from "../../hooks/AppContext";
+import { useSound } from "../../hooks/MusicContext";
 
 export default function AudioListScreen() {
   const musicList = useMusicList();
   const [visible, setVisible] = useState(false);
   const { navigate } = useNavigation();
   const setCurrent = useCurrentUpdate();
+  const sound = useSound();
 
   const openModal = async (val) => {
     setCurrentItem(val);
     setVisible(true);
   };
 
-  const HandleClick = (item) => {
+  const HandleClick = async (item) => {
+    let status = await sound.current.getStatusAsync();
+    if (status.isLoaded == true) {
+      await sound.current.unloadAsync();
+    }
     setCurrent(item);
     navigate("player", { item });
   };

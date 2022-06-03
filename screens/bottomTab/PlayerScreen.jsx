@@ -5,7 +5,11 @@ import Slider from "@react-native-community/slider";
 import { useNavigation } from "@react-navigation/native";
 import MarqueeText from "react-native-marquee";
 import ConvertTime from "../../utility/ConvertTime";
-import { usePlaying } from "../../hooks/AppContext";
+import {
+  useCurrent,
+  usePlaying,
+  usePlayingUpdate,
+} from "../../hooks/AppContext";
 import { useIsplaying, usePlayPause, useSound } from "../../hooks/MusicContext";
 import { playerScreenStyles as styles } from "../styles/playerScreen";
 
@@ -16,13 +20,26 @@ export default function PlayerScreen({ route }) {
   const isPlaying = useIsplaying();
   const music = usePlaying();
   const sound = useSound();
+  const current = useCurrent();
   const HandlePlayPause = usePlayPause();
-  let position;
-  try {
+  const setPlaying = usePlayingUpdate();
+  let position = 0;
+  if (music && music.positionMillis) {
     position = (music.positionMillis / music.durationMillis) * 100;
-  } catch (error) {
-    position = 0;
   }
+
+  const ResetPlayer = async () => {
+    try {
+      const checkLoading = await sound.current.getStatusAsync();
+      if (checkLoading.isLoaded === true) {
+        await sound.current.setPositionAsync(0);
+        await sound.current.stopAsync();
+        await sound.current.unloadAsync();
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const SeekUpdate = async (data) => {
     const status = await sound.current.getStatusAsync();
@@ -51,6 +68,37 @@ export default function PlayerScreen({ route }) {
     }
   };
 
+  const Play = async () => {
+    let status = await sound.current.getStatusAsync();
+    if (status.isLoaded == false) {
+      await sound.current.loadAsync({ uri: item.uri });
+    } else if (status.isLoaded == true) {
+      await sound.current.unloadAsync();
+      await sound.current.loadAsync({ uri: item.uri });
+    }
+    await sound.current.playAsync();
+    sound.current.setOnPlaybackStatusUpdate(UpdateStatus);
+  };
+
+  const UpdateStatus = async (data) => {
+    try {
+      setPlaying(data);
+      if (data.didJustFinish) {
+        ResetPlayer();
+      } else if (data.positionMillis) {
+        if (data.durationMillis) {
+        }
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    position = 0;
+    Play();
+  }, []);
+
   return (
     <View style={styles.container}>
       <View style={styles.headerContainer}>
@@ -60,6 +108,7 @@ export default function PlayerScreen({ route }) {
             goBack();
           }}
         >
+          <Text>{position}</Text>
           <Entypo name="chevron-down" size={20} color="#808080" />
         </TouchableOpacity>
         <MarqueeText
@@ -70,7 +119,7 @@ export default function PlayerScreen({ route }) {
           loop={true}
           delay={1000}
         >
-          {route.params.item.filename}
+          {current.filename}
         </MarqueeText>
 
         <TouchableOpacity onPress={() => {}}>
@@ -90,9 +139,11 @@ export default function PlayerScreen({ route }) {
       <View style={styles.footer}>
         <View style={styles.sliderContainer}>
           <Text style={styles.sliderText}>
-            {ConvertTime(route.params.item.duration / 6000)}
+            {music && music.positionMillis
+              ? ConvertTime(music.positionMillis / 60000)
+              : ConvertTime(0)}
           </Text>
-          <Slider
+          {/* <Slider
             style={styles.slider}
             minimumValue={0}
             maximumValue={100}
@@ -103,9 +154,9 @@ export default function PlayerScreen({ route }) {
             onSlidingComplete={(data) => SeekUpdate(data)}
             minimumTrackTintColor={"dodgerblue"}
             step={1}
-          />
+          /> */}
           <Text style={styles.sliderText}>
-            {ConvertTime(route.params.item.duration / 60)}
+            {ConvertTime(current.duration / 60)}
           </Text>
         </View>
 
