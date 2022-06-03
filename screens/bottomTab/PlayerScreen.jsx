@@ -1,5 +1,5 @@
-import React, { useEffect, useState, useContext, useRef } from "react";
-import { Text, View, TouchableOpacity, Image, BackHandler } from "react-native";
+import React, { useEffect, useState } from "react";
+import { Text, View, TouchableOpacity, Image } from "react-native";
 import { Entypo, AntDesign } from "@expo/vector-icons";
 import Slider from "@react-native-community/slider";
 import { useNavigation } from "@react-navigation/native";
@@ -10,7 +10,11 @@ import {
   usePlaying,
   usePlayingUpdate,
 } from "../../hooks/AppContext";
-import { useIsplaying, usePlayPause, useSound } from "../../hooks/MusicContext";
+import {
+  useIsplaying,
+  useIsPlayingUpdate,
+  useSound,
+} from "../../hooks/MusicContext";
 import { playerScreenStyles as styles } from "../styles/playerScreen";
 
 export default function PlayerScreen({ route }) {
@@ -21,7 +25,7 @@ export default function PlayerScreen({ route }) {
   const music = usePlaying();
   const sound = useSound();
   const current = useCurrent();
-  const HandlePlayPause = usePlayPause();
+  const setIsPlaying = useIsPlayingUpdate();
   const setPlaying = usePlayingUpdate();
   let position = 0;
   if (music && music.positionMillis) {
@@ -31,6 +35,7 @@ export default function PlayerScreen({ route }) {
   const ResetPlayer = async () => {
     await sound.current.stopAsync();
     await sound.current.unloadAsync();
+    setIsPlaying(false);
   };
 
   const SeekUpdate = async (data) => {
@@ -57,6 +62,7 @@ export default function PlayerScreen({ route }) {
       return null;
     } else {
       sound.current.pauseAsync();
+      setIsPlaying(false);
     }
   };
 
@@ -68,6 +74,7 @@ export default function PlayerScreen({ route }) {
       await sound.current.unloadAsync();
       await sound.current.loadAsync({ uri: item.uri });
     }
+    setIsPlaying(true);
     await sound.current.playAsync();
     sound.current.setOnPlaybackStatusUpdate(UpdateStatus);
   };
@@ -140,7 +147,7 @@ export default function PlayerScreen({ route }) {
             maximumValue={100}
             value={position}
             onSlidingStart={() => {
-              Pause();
+              sound.current.pauseAsync();
             }}
             onSlidingComplete={(data) => SeekUpdate(data)}
             minimumTrackTintColor={"dodgerblue"}
@@ -156,10 +163,7 @@ export default function PlayerScreen({ route }) {
             <AntDesign name="stepbackward" size={15} color="#808080" />
           </View>
 
-          <TouchableOpacity
-            style={[styles.button, { width: 45, height: 45 }]}
-            onPress={HandlePlayPause}
-          >
+          <TouchableOpacity style={[styles.button, { width: 45, height: 45 }]}>
             <AntDesign
               name={isPlaying == true ? "pause" : "caretright"}
               size={24}

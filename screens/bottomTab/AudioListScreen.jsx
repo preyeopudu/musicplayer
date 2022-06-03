@@ -5,11 +5,7 @@ import ConvertTime from "../../utility/ConvertTime";
 import { Entypo } from "@expo/vector-icons";
 import BottomModal from "../../components/BottomModal";
 import { useNavigation } from "@react-navigation/native";
-import {
-  useCurrent,
-  useCurrentUpdate,
-  useMusicList,
-} from "../../hooks/AppContext";
+import { useCurrentUpdate, useMusicList } from "../../hooks/AppContext";
 import { useSound } from "../../hooks/MusicContext";
 
 export default function AudioListScreen() {
