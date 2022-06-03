@@ -29,16 +29,8 @@ export default function PlayerScreen({ route }) {
   }
 
   const ResetPlayer = async () => {
-    try {
-      const checkLoading = await sound.current.getStatusAsync();
-      if (checkLoading.isLoaded === true) {
-        await sound.current.setPositionAsync(0);
-        await sound.current.stopAsync();
-        await sound.current.unloadAsync();
-      }
-    } catch (error) {
-      console.log(error);
-    }
+    await sound.current.stopAsync();
+    await sound.current.unloadAsync();
   };
 
   const SeekUpdate = async (data) => {
