@@ -36,6 +36,16 @@ export default function PlayerScreen({ route }) {
     position = (music.positionMillis / music.durationMillis) * 100;
   }
 
+  const Back = () => {
+    let index = musicList.indexOf(item);
+    if (index <= 0) {
+      index = musicList.length - 1;
+    }
+    const next = musicList[index - 1];
+
+    navigate("player", { item: next });
+  };
+
   const Skip = () => {
     let index = musicList.indexOf(item);
     if (index + 1 >= musicList.length) {
@@ -171,9 +181,9 @@ export default function PlayerScreen({ route }) {
         </View>
 
         <View style={styles.controller}>
-          <View style={[styles.button]}>
+          <TouchableOpacity onPress={Back} style={[styles.button]}>
             <AntDesign name="stepbackward" size={15} color="#808080" />
-          </View>
+          </TouchableOpacity>
 
           <TouchableOpacity style={[styles.button, { width: 45, height: 45 }]}>
             <AntDesign
