@@ -8,6 +8,7 @@ import ConvertTime from "../../utility/ConvertTime";
 import {
   useCurrent,
   useCurrentUpdate,
+  useMusicList,
   usePlaying,
   usePlayingUpdate,
 } from "../../hooks/AppContext";
@@ -21,7 +22,7 @@ import { playerScreenStyles as styles } from "../styles/playerScreen";
 export default function PlayerScreen({ route }) {
   const { item } = route.params;
   const [play, setPlay] = useState(false);
-  const { goBack } = useNavigation();
+  const { goBack, navigate } = useNavigation();
   const isPlaying = useIsplaying();
   const music = usePlaying();
   const sound = useSound();
@@ -29,10 +30,21 @@ export default function PlayerScreen({ route }) {
   const setIsPlaying = useIsPlayingUpdate();
   const setPlaying = usePlayingUpdate();
   const setCurrent = useCurrentUpdate();
+  const musicList = useMusicList();
   let position = 0;
   if (music && music.positionMillis) {
     position = (music.positionMillis / music.durationMillis) * 100;
   }
+
+  const Skip = () => {
+    let index = musicList.indexOf(item);
+    if (index + 1 >= musicList.length) {
+      index = -1;
+    }
+    const next = musicList[index + 1];
+
+    navigate("player", { item: next });
+  };
 
   const ResetPlayer = async () => {
     await sound.current.stopAsync();
@@ -96,9 +108,10 @@ export default function PlayerScreen({ route }) {
   };
 
   useEffect(() => {
+    console.log(item);
     position = 0;
     Play();
-  }, []);
+  }, [item]);
 
   return (
     <View style={styles.container}>
@@ -145,6 +158,7 @@ export default function PlayerScreen({ route }) {
           </Text>
           <Slider
             style={styles.slider}
+            value={position}
             minimumValue={0}
             maximumValue={100}
             onSlidingComplete={(data) => SeekUpdate(data)}
@@ -170,9 +184,9 @@ export default function PlayerScreen({ route }) {
             />
           </TouchableOpacity>
 
-          <View style={[styles.button]}>
+          <TouchableOpacity onPress={Skip} style={[styles.button]}>
             <AntDesign name="stepforward" size={15} color="#808080" />
-          </View>
+          </TouchableOpacity>
         </View>
       </View>
     </View>

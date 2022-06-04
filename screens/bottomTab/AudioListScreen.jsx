@@ -24,7 +24,7 @@ export default function AudioListScreen() {
     if (status.isLoaded == true) {
       await sound.current.unloadAsync();
     }
-    navigate("player", { item });
+    navigate("player", { item: item });
   };
 
   return (
