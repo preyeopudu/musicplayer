@@ -50,7 +50,6 @@ export default function PlayerScreen({ route }) {
         if (checkLoading.isLoaded === true) {
           const result = (data / 100) * music.durationMillis;
           await sound.current.setPositionAsync(Math.round(result));
-          await sound.current.playAsync();
         }
       } catch (error) {
         console.log(error);
@@ -112,7 +111,7 @@ export default function PlayerScreen({ route }) {
         >
           <Entypo name="chevron-down" size={20} color="#808080" />
         </TouchableOpacity>
-        <MarqueeText
+        <Text
           numberOfLines={1}
           style={styles.audioTitle}
           speed={0.8}
@@ -121,7 +120,7 @@ export default function PlayerScreen({ route }) {
           delay={1000}
         >
           {item.filename}
-        </MarqueeText>
+        </Text>
 
         <TouchableOpacity onPress={() => {}}>
           <Entypo name="dots-three-vertical" size={18} color="#000" />
@@ -148,10 +147,6 @@ export default function PlayerScreen({ route }) {
             style={styles.slider}
             minimumValue={0}
             maximumValue={100}
-            value={position}
-            onSlidingStart={() => {
-              sound.current.pauseAsync();
-            }}
             onSlidingComplete={(data) => SeekUpdate(data)}
             minimumTrackTintColor={"dodgerblue"}
             step={1}
