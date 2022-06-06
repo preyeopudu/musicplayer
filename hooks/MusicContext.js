@@ -1,6 +1,7 @@
 import React, { useContext, createContext, useState } from "react";
 import { Audio } from "expo-av";
 
+Audio.setAudioModeAsync({ staysActiveInBackground: true });
 const IsPlaying = createContext();
 const IsPlayingUpdate = createContext();
 const SoundContext = createContext();
